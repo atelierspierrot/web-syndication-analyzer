@@ -5,7 +5,7 @@ namespace RSS\Abstracts;
 /**
  * Interface for object containing RSS items
  */
-interface ItemsContainer_Interface
+interface ItemsContainerInterface
 {
     public function __toString();
     public function getTagItem($tag_name);

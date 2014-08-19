@@ -5,7 +5,7 @@ namespace RSS\Abstracts;
 /**
  * Interface for RSS item(s) parser
  */
-interface Parser_Interface
+interface ParserInterface
 {
     public function parse();
 }

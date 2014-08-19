@@ -5,7 +5,7 @@ namespace RSS\Abstracts;
 /**
  * Interface for RSS item(s)
  */
-interface Item_Interface
+interface ItemInterface
 {
     public function getXmlValue();
 }

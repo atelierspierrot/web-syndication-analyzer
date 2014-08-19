@@ -5,7 +5,7 @@ namespace RSS\Abstracts;
 /**
  * Interface for RSS feed(s) reader
  */
-interface Reader_Interface
+interface ReaderInterface
 {
     public function read();
 }

@@ -28,10 +28,10 @@ $(function(){
     <?php echo _T('related_media'); ?>&nbsp;:&nbsp;
     <a href="<?php echo $xml->url->content; ?>" title="<?php echo _T('see_online'); ?>"<?php
         if ($is_image) echo ' id="'.$image_id.'" rel="'.$xml->url->content.'"';
-    ?>><?php echo RSS_Helper::getFilename($xml->url->content); ?></a>
+    ?>><?php echo \RSS\Helper::getFilename($xml->url->content); ?></a>
      (<em><?php
         echo _T('document_type', array('type'=>$xml->type->content))
         .' - '
-        ._T('media_length', array('length'=>RSS_Helper::getHumanSize($xml->length->content)));
+        ._T('media_length', array('length'=>\RSS\Helper::getHumanSize($xml->length->content)));
     ?></em>)
 </div>

@@ -1,9 +1,13 @@
 <?php
 
+namespace RSS;
+
+use \SimpleXMLElement;
+
 /**
  * Helper class for RSS library
  */
-class RSS_Helper
+class Helper
 {
 
 // -------------------
@@ -18,8 +22,6 @@ class RSS_Helper
         if (!isset(self::$specifications[$specs_name]))
         {
             $specs_file = rtrim(RSS_SPECS, '/').'/'.$specs_name.'.ini';
-
-if (RSSLIB_DEBUG) echo '<br />loading specs file : '.var_export($specs_file,1);
 
             $specs = @parse_ini_file($specs_file, true);
             if (!$specs) {
@@ -109,9 +111,7 @@ if (RSSLIB_DEBUG) echo '<br />loading specs file : '.var_export($specs_file,1);
         $content = $xml_item->__toString();
         if ($xml_item)
         {
-            foreach($xml_item->children() as $i=>$child)
-            {
-if (RSSLIB_DEBUG) echo '<br />child "'.$i.'" with value : '.$child->asXml();
+            foreach($xml_item->children() as $i=>$child){
                 $content .= $child->asXml();
             }
         }

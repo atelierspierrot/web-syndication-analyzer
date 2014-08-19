@@ -2,14 +2,16 @@
 
 namespace RSS;
 
-use \RSS\Abstracts\DataObject;
-use \RSS\Abstracts\Item_Interface;
-use \RSS\Abstracts\Parser_Interface;
-use \RSS\Abstracts\ItemsContainer_Interface;
+use \DateTime;
+use \SimpleXMLElement;
+use \RSS\Abstracts\XMLDataObject;
+use \RSS\Abstracts\ItemInterface;
+use \RSS\Abstracts\ParserInterface;
+use \RSS\Abstracts\ItemsContainerInterface;
 
 class Item
-    extends DataObject
-    implements Item_Interface, Parser_Interface, ItemsContainer_Interface
+    extends XMLDataObject
+    implements ItemInterface, ParserInterface, ItemsContainerInterface
 {
 
     public $content = null;
@@ -26,7 +28,7 @@ class Item
     {
         $this
             ->setType( $type )
-            ->setXmlValue( $tag_value instanceOf SimpleXMLElement ? RSS_Helper::getContent( $tag_value ) : $tag_value )
+            ->setXmlValue( $tag_value instanceOf SimpleXMLElement ? \RSS\Helper::getContent( $tag_value ) : $tag_value )
             ->setName( $tag_name );
 
         if ($tag_value instanceOf SimpleXMLElement) {
@@ -139,7 +141,7 @@ class Item
     public function parse()
     {
         if (is_object($this->xml)) {
-            $this->attributes = RSS_Helper::getAttributesAsArray($this->getXml());
+            $this->attributes = \RSS\Helper::getAttributesAsArray($this->getXml());
         }
 
         switch($this->type) {
@@ -191,7 +193,7 @@ class Item
     
     public function getTagItem($tag_name)
     {
-        return RSS_Helper::findTagByCommonName( $this, $tag_name );
+        return \RSS\Helper::findTagByCommonName( $this, $tag_name );
     }
 
 // -------------------

@@ -1,16 +1,17 @@
 <?php
 
-namespace RSS;
+namespace RSS\Abstracts;
 
+use \SimpleXMLElement;
 use \RSS\Abstracts\XMLDataObject;
-use \RSS\Abstracts\ItemsContainer_Interface;
+use \RSS\Abstracts\ItemsContainerInterface;
 
 /**
  * A collection helper for XML objects
  */
 class XMLObjectsCollection
     extends XMLDataObject
-    implements \Iterator, ItemsContainer_Interface
+    implements \Iterator, ItemsContainerInterface
 {
 
     protected $position=0;

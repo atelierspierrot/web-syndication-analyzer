@@ -2,14 +2,15 @@
 
 namespace RSS;
 
-use \RSS\Abstracts\DataObject;
-use \RSS\Abstracts\Parser_Interface;
-use \RSS\Abstracts\Reader_Interface;
-use \RSS\Abstracts\ItemsContainer_Interface;
+use \SimpleXMLElement;
+use \RSS\Abstracts\XMLDataObject;
+use \RSS\Abstracts\ParserInterface;
+use \RSS\Abstracts\ReaderInterface;
+use \RSS\Abstracts\ItemsContainerInterface;
 
 class Feed
-    extends DataObject
-    implements Parser_Interface, Reader_Interface, ItemsContainer_Interface
+    extends XMLDataObject
+    implements ParserInterface, ReaderInterface, ItemsContainerInterface
 {
 
     protected $feed_url;
@@ -90,7 +91,7 @@ class Feed
     public function setFeedUrl($feed_url)
     {
         $this->feed_url = $feed_url;
-        $this->id = RSS_Helper::encodeStringToId( $this->feed_url );
+        $this->id = \RSS\Helper::encodeStringToId( $this->feed_url );
         return $this;
     }
 
@@ -126,7 +127,7 @@ class Feed
     public function getTagItem($tag_name)
     {
         $tags = $this->getData();
-        $found = RSS_Helper::findTagByCommonName( $tags, $tag_name );
+        $found = \RSS\Helper::findTagByCommonName( $tags, $tag_name );
         if (!empty($found)) {
             return $found;
         } else {
@@ -145,14 +146,14 @@ class Feed
         } catch(Exception $e) {
             throw new RuntimeException( 'An error occurred while trying to read URL '.$this->getFeedUrl().' : '.$e->getMessage() );
         }
-        if (RSS_Helper::readProtocol($this->xml)) {
-            $this->setProtocol( RSS_Helper::readProtocol($this->xml) );
+        if (\RSS\Helper::readProtocol($this->xml)) {
+            $this->setProtocol( \RSS\Helper::readProtocol($this->xml) );
         }
-        if (RSS_Helper::readVersion($this->xml)) {
-            $this->setVersion( RSS_Helper::readVersion($this->xml) );
+        if (\RSS\Helper::readVersion($this->xml)) {
+            $this->setVersion( \RSS\Helper::readVersion($this->xml) );
         }
-        if (RSS_Helper::readNamespaces($this->xml)) {
-            $this->setNamespaces( RSS_Helper::readNamespaces($this->xml) );
+        if (\RSS\Helper::readNamespaces($this->xml)) {
+            $this->setNamespaces( \RSS\Helper::readNamespaces($this->xml) );
         }
         if (!empty($this->xml)) $this->parse();
     }
@@ -176,7 +177,7 @@ class Feed
                 $parser = new \RSS\Parser( $item, $this, 'item' );
                 $item = $parser->getData();
                 $item->protocol = strtolower($this->getProtocol());
-                $item->id = $this->id.'_'.RSS_Helper::encodeStringToId( $item->title->content );
+                $item->id = $this->id.'_'.\RSS\Helper::encodeStringToId( $item->title->content );
                 $this->items->addData( $i, $item );
             }
 
@@ -193,7 +194,7 @@ class Feed
                 $parser = new \RSS\Parser( $item, $this, 'feed' );
                 $item = $parser->getData();
                 $item->protocol = strtolower($this->getProtocol());
-                $item->id = $this->id.'_'.RSS_Helper::encodeStringToId( $item->title->content );
+                $item->id = $this->id.'_'.\RSS\Helper::encodeStringToId( $item->title->content );
                 $this->items->addData( $i, $item );
             }
         }

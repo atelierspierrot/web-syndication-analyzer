@@ -2,6 +2,7 @@
 
 namespace RSS\Abstracts;
 
+use \SimpleXMLElement;
 use \RSS\Abstracts\SimpleObject;
 
 /**

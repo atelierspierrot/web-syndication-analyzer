@@ -429,7 +429,7 @@ final class \RSS\Feeds_Reader
                 $response = array(
                     'error' => $this->getMessages('error'),
                     'info' => $this->getMessages('info'),
-                    'content' => RSS_Helper::getSecuredString( $this->getContent() )
+                    'content' => \RSS\Helper::getSecuredString( $this->getContent() )
                 );
                 if (!empty($this->global_response_args))
                 {

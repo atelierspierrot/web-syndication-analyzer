@@ -2,13 +2,13 @@
 
 namespace RSS\Abstracts;
 
-use \RSS\Abstracts\ItemsContainer_Interface;
+use \RSS\Abstracts\ItemsContainerInterface;
 
 /**
  * A specific standard class definition
  */
 class StdClass
-    implements ItemsContainer_Interface
+    implements ItemsContainerInterface
 {
 
     public function hasAttribute()
@@ -27,7 +27,7 @@ class StdClass
     
     public function getTagItem($tag_name)
     {
-        return RSS_Helper::findTagByCommonName($this, $tag_name);
+        return \RSS\Helper::findTagByCommonName($this, $tag_name);
     }
 
 }

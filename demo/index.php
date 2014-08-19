@@ -125,7 +125,22 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
 
             <article>
 
+<?php
 
+define('RSS_SPECS', __DIR__.'/../src/RSS/specifications/');
+
+/*
+    'Cyber Citi (test atom)'        => 'http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks',
+    'Digital Trends (test rss 2.0)' => 'http://www.digitaltrends.com/feed/'
+*/
+$feed = new \RSS\Feed('http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks');
+
+$feed->read();
+
+var_export($feed);
+
+
+?>
 
             </article>
 

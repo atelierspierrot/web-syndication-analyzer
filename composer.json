@@ -1,0 +1,29 @@
+{
+    "name": "atelierspierrot/rss-analyzer",
+    "type": "library",
+    "title": "PHP RSS feeds anaylzer",
+    "description": "A package to manipulate RSS feeds.",
+    "keywords": ["rss"],
+    "homepage": "http://github.com/atelierspierrot/rss-analyzer",
+    "license": "GPL-3.0",
+    "authors": [{
+            "name": "Les Ateliers Pierrot & contributors",
+            "email": "contact@ateliers-pierrot.fr",
+            "homepage": "http://www.ateliers-pierrot.fr/"
+    }],
+    "require": {
+        "php": ">=5.3.0",
+        "atelierspierrot/patterns": "1.*",
+        "atelierspierrot/library": "1.*"
+    },
+    "require-dev": {
+        "sami/sami": "dev-master",
+        "phpmd/phpmd" : "1.4.*"
+    },
+    "autoload": { "psr-0": { "RSS": "src/", "CachedRSS": "src/" } },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

@@ -1,0 +1,58 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+$channel_image = $xml->getTagItem('image');
+$channel_title = $xml->getTagItem('title');
+$channel_date = $xml->getTagItem('updated_date');
+$channel_link = $xml->getTagItem('link');
+$channel_description = $xml->getTagItem('description');
+$channel_subtitle = $xml->getTagItem('subtitle');
+?>
+<div class="channel-wrapper ui-widget">
+
+    <div class="ui-helper-reset ui-widget-content ui-corner-all">
+
+    <div class="ui-helper-reset ui-widget-header ui-corner-left">
+<?php if (!empty($channel_image)) : ?>
+    <?php echo $app->renderView(
+        $app->getOption('image_tag_template'),
+        array(
+            'xml' => $channel_image, 'alt_class' => $alt_class.' channel',
+            'max_width' => 120, 'max_height'=>120
+        )
+    ); ?>
+<?php endif; ?>
+    </div>
+
+    <div class="margin-1">
+
+        <div class="channel title">
+<?php if (!empty($channel_link)) : ?>
+        <a href="<?php echo $channel_link->content; ?>" title="<?php 
+            echo (isset($channel_link->title) ? $channel_link->title->content : _T('see_online'));
+        ?>">
+<?php endif; ?>
+            <?php echo $channel_title->content; ?>
+<?php if (!empty($channel_link)) : ?>
+        </a>
+<?php endif; ?>
+        </div>
+
+<?php if (!empty($channel_subtitle)) : ?>
+        <div class="channel content subtitle">
+            <?php echo $channel_subtitle->getXmlValue(); ?>
+        </div>
+<?php endif; ?>
+
+<?php if (!empty($channel_description)) : ?>
+        <div class="channel content">
+            <?php echo $channel_description->getXmlValue(); ?>
+        </div>
+<?php endif; ?>
+
+    </div>
+
+    <br class="clear-both" />
+    </div>
+
+</div>
+<br class="clear-both" />

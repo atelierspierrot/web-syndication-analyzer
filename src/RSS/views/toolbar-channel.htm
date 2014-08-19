@@ -1,0 +1,155 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+if (empty($channel_id)) $channel_id = $xml->id;
+if (!isset($categories)) $categories = array();
+
+$channel_date = $xml->getTagItem('updated_date');
+
+?>
+<script type="text/javascript">
+$(function() {
+
+    // items count
+    $("#<?php echo $channel_id; ?>_itemscounter").button();
+
+    // dates
+    $(".date-buttons").button({ icons: { primary: "ui-icon-clock" } });
+
+    // remove feed
+    $("#<?php echo $channel_id; ?>_remove").button({
+        text: false,
+        icons: { primary: "ui-icon-trash" }
+    })
+    .click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'user:removeFeed', 'feed_url'=>$rss->getFeedUrl()), '&'); ?>");
+    });
+
+    // see online
+    $("#<?php echo $channel_id; ?>_link").button({
+        text: false,
+        icons: { primary: "ui-icon-home" }
+    })
+    .click(function(){
+        linkGoto("<?php echo $xml->link->content; ?>");
+    });
+
+    // see online in a new window
+    $("#<?php echo $channel_id; ?>_linkout").button({
+        text: false,
+        icons: { primary: "ui-icon-copy" }
+    })
+    .click(function(){
+        linkGotoNewWin("<?php echo $xml->link->content; ?>");
+    });
+
+    // refresh
+    $("#<?php echo $channel_id; ?>_refresh").button({
+        text: false,
+        icons: { primary: "ui-icon-refresh" }
+    })
+    .click(function(){
+        appAjaxLoad(
+            "<?php echo buildUrl(array('action'=>'feed', 'feed_url'=>$rss->getFeedUrl(),'refresh'=>true), '&'); ?>",
+            "<?php echo $channel_id; ?>_wrapper", 
+            "replace"
+        );
+    });
+
+
+    function toggleFavorites( element )
+    {
+        var _parent = $(element).next("label"),
+            spanelement = _parent.find("span.ui-button-text"),
+            spanalt = _parent.attr("data-alt"),
+            spantext = _parent.attr("title");
+        _parent.attr("title", spanalt);
+        _parent.attr("data-alt", spantext);
+    }
+
+    // add/remove from favrotites
+    $("#<?php echo $channel_id; ?>_favorite")
+        .each(function(index,element){
+            if ($(element).is(":checked")) toggleFavorites( element );
+        })
+        .button({ text: false, icons: { primary: "ui-icon-pin-s" } })
+        .click(function(){
+            if ($(this).is(":checked")) {
+                appAjaxLoad("<?php echo buildUrl(array('action'=>'user:addToFavorites', 'feed_url'=>$rss->getFeedUrl()), '&'); ?>");
+                toggleFavorites( $(this) );
+            }
+            else {
+                appAjaxLoad("<?php echo buildUrl(array('action'=>'user:removeFromFavorites', 'feed_url'=>$rss->getFeedUrl()), '&'); ?>");
+                toggleFavorites( $(this) );
+            }
+        });
+
+<?php if (!empty($categories)) : ?>
+    $("#<?php echo $channel_id; ?>_filtercategories")
+        .multiselect({
+            noneSelectedText: "<?php echo _T('filter_categories'); ?>",
+            selectedText: "<?php echo _T('filter_categories'); ?>",
+            checkAllText: "<?php echo _T('check_all'); ?>",
+            uncheckAllText: "<?php echo _T('uncheck_all'); ?>",
+            minWidth: 320,
+            multiple: true,
+            classes: "selector"
+        })
+        .multiselectfilter({
+            label: "<?php echo _T('filter'); ?>",
+            placeholder: "<?php echo _T('filter'); ?>"
+        })
+        .bind("multiselectclick", function(event, ui){
+            /*
+            ui.value: value of the checkbox
+            ui.text: text of the checkbox
+            ui.checked: whether or not the input was checked or unchecked (boolean)
+            */
+            var action = (ui.checked===true ? "add" : "remove");
+            filterItemsByCategories("<?php echo $channel_id; ?>", ui.value, action);
+        });
+<?php endif; ?>
+
+});
+</script>
+<div id="<?php echo $channel_id; ?>_toolbar" class="ui-widget-header ui-corner-all feedreader-toolbar">
+<?php if (!empty($user) && true===$user->isLogged()) : ?>
+    <input type="checkbox" id="<?php echo $channel_id; ?>_favorite" name="<?php echo $channel_id; ?>-favorite" <?php
+            if ($app->isFavoriteFeed($rss->getFeedUrl())) echo 'checked="checked"';
+        ?> accesskey="B" /><label for="<?php echo $channel_id; ?>_favorite" data-alt="<?php echo _T('remove_from_favorites'); ?>"><?php echo _T('add_to_favorites'); ?></label>
+<?php endif; ?>
+    <button id="<?php echo $channel_id; ?>_refresh" accesskey="R"><?php echo _T('refresh_this_feed'); ?></button>
+    <button id="<?php echo $channel_id; ?>_link"><?php echo _T('see_website_homepage'); ?></button>
+<!--
+    <button id="<?php echo $channel_id; ?>_linkout"><?php echo _T('see_website_homepage_in_new_window'); ?></button>
+-->
+<?php if (!empty($user) && true===$user->isLogged()) : ?>
+    <button id="<?php echo $channel_id; ?>_remove" accesskey="X"><?php echo _T('remove_this_feed'); ?></button>
+<?php endif; ?>
+
+<?php if (!empty($categories)) : ?>
+        <select id="<?php echo $channel_id; ?>_filtercategories" name="<?php echo $channel_id; ?>-filtercategories" multiple="multiple" title="<?php
+            echo _T('filter_by_categories');
+        ?>">
+    <?php foreach ($categories as $i=>$cat) : ?>
+            <option value="<?php echo $cat; ?>" selected="selected"><?php echo $cat; ?></option>
+    <?php endforeach; ?>
+        </select>
+<?php endif; ?>
+
+    <div class="float-right">
+    <button id="<?php echo $channel_id; ?>_itemscounter" title="<?php
+        echo _T('number_of_feed_content_items');
+    ?>"><?php
+        echo _P(
+            array( 1=>'one_item', 2=>'many_items' ),
+            $rss->getItemsCount()
+        );
+    ?></button>
+
+<?php if (!empty($channel_date)) : ?>
+        <?php echo $app->renderView( $app->getOption('date_tag_widget_template'), array('xml'=>$channel_date) ); ?>
+<?php endif; ?>
+    </div>
+
+    <br class="clear-both" />
+</div>

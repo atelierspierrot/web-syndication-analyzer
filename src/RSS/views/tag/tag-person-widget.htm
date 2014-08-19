@@ -1,0 +1,63 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+if (!isset($alt_class)) $alt_class = '';
+if (empty($item_id)) $item_id = uniqid();
+
+$author_name = $author_uri = $author_email = null;
+if (isset($xml->name)) {
+    $author_name = $xml->name->content;
+    if (isset($xml->uri)) {
+        $author_uri = $xml->uri->content;
+    }
+    if (isset($xml->email)) {
+        $author_email = $xml->email->content;
+    }
+}
+else {
+    $author_email = $xml->content;
+    $author_name = $xml->content;
+}
+?>
+<script type="text/javascript">
+$(function() {
+    $("#<?php echo $item_id; ?>_author")
+        .button({ icons: { primary: "ui-icon-person" } })
+        .click(function(){
+
+        });
+
+<?php if (!empty($author_email)) : ?>
+    $("#<?php echo $item_id; ?>_author_email")
+        .button({ text:false, icons: { primary: "ui-icon-contact" } })
+        .click(function(){ linkMailto($(this).attr("data-href")); })
+        .parent().buttonset();
+<?php endif; ?>
+
+<?php if (!empty($author_uri)) : ?>
+    $("#<?php echo $item_id; ?>_author_uri")
+        .button({ text:false, icons: { primary: "ui-icon-link" } })
+        .click(function(){ linkGoto($(this).attr("data-href")); })
+        .parent().buttonset();
+<?php endif; ?>
+
+});
+</script>
+<div style="display: inline;">
+
+<button id="<?php echo $item_id; ?>_author" title="<?php echo _T('author'); ?>">
+    <?php echo $author_name; ?>
+</button>
+
+<?php if (!empty($author_uri)) : ?>
+<button id="<?php echo $item_id; ?>_author_uri" data-href="<?php echo $author_uri; ?>">
+    <?php echo _T('see_online_in_new_window'); ?>
+</button>
+<?php endif; ?>
+
+<?php if (!empty($author_email)) : ?>
+<button id="<?php echo $item_id; ?>_author_email" data-href="<?php echo $author_email; ?>">
+    <?php echo _T('contact_this_email'); ?>
+</button>
+<?php endif; ?>
+
+</div>

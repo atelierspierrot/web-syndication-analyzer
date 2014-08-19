@@ -1,0 +1,10 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+if (!isset($alt_class)) $alt_class = '';
+
+?>
+<span class="<?php echo $alt_class; ?> date">
+    <abbr title="<?php echo $xml->content->format('c'); ?>">
+        <?php echo APP_Helper::getLocalizedDateString($this->content); ?>
+    </abbr>
+</span>

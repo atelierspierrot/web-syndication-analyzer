@@ -1,0 +1,75 @@
+<?php
+$rss = $rss_reader->getFeed($feed_url);
+if (!isset($limit)) $limit = $app->getOption('max_items_nb',50);
+if (!isset($offset)) $offset = 0;
+if (empty($channel_id)) $channel_id = $rss->id;
+if (empty($next_offset)) $next_offset = $offset + $limit;
+if (!isset($loadmore_url))
+    $loadmore_url = buildUrl(array(
+        'action'=>'feedItems', 
+        'offset'=>$next_offset,
+        'feed_url'=>$rss->getFeedUrl()
+    ), '&');
+?>
+<?php
+if (!isAjaxRequest()) {
+    echo $app->renderView(
+        $app->getOption('breadcrumb_template')
+    );
+}
+?>
+<script type="text/javascript">
+$(function(){
+    $("#<?php echo $channel_id; ?>_accordion").accordion({
+//        header: "> div > h3", heightStyle: "content", collapsible: true
+        header: "h3", heightStyle: "content", collapsible: true
+    });
+});
+</script>
+<div id="<?php echo $channel_id; ?>_wrapper">
+
+    <?php echo $app->renderView(
+        $app->getOption('channel_toolbar_template'),
+        array(
+            'rss' => $rss, 'xml' => $rss->getChannel(),
+            'channel_id' => $channel_id, 'categories'=>$rss->getItemsCategories($limit, $offset)
+        )
+    ); ?>
+
+<?php
+echo $app->renderView(
+    $app->getOption('entry_channel_template'),
+    array( 'xml' => $rss->getChannel(), 'channel_id' => $channel_id )
+);
+?>
+<div id="<?php echo $channel_id; ?>_accordion" class="rss-reader-accordion">
+    <?php
+        echo $app->renderView(
+            $app->getOption('items_feed_template'),
+            array( 'rss' => $rss, 'limit' => $limit, 'offset' => $offset )
+        );
+    ?>
+</div>
+
+<?php if (count($rss->getItemsCollection()) > $limit) : ?>
+<script type="text/javascript">
+var oid_<?php echo $channel_id; ?>_loadmoreurl = '<?php echo $loadmore_url; ?>';
+$(function(){
+
+    addAccesskeysInfos();
+
+    $("#<?php echo $channel_id; ?>_loadmore")
+        .button({
+            icons: { primary: "ui-icon-plus" }
+        })
+        .click(function( event ) {
+            appAjaxLoad( oid_<?php echo $channel_id; ?>_loadmoreurl, '<?php echo $channel_id; ?>_accordion' );
+        });
+});
+</script>
+<div class="centered-button">
+    <button id="<?php echo $channel_id; ?>_loadmore"><?php echo _T('load_more_contents'); ?></button>
+</div>
+<?php endif; ?>
+
+</div>

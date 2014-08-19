@@ -1,0 +1,164 @@
+<?php
+// available languages
+if (!isset($current_language))
+{
+    $current_language = i18n::getInstance()->getLanguage();
+}
+// is the reader empty ?
+$reader_is_null = (null===$rss_reader);
+// is the app empty ?
+$app_is_installed = $app->isInstalled();
+// user is logged ?
+$user_is_logged = $user->isLogged();
+?>
+<script type="text/javascript">
+$(function(){
+
+    $("#feedreader_topmenu")
+        .menu({ role: "navigation" })
+        .keydown(function(evt){
+            if (evt.keyCode===13 || evt.keyCode===32) {
+                var item_target = $(evt.target).attr("aria-activedescendant");
+                if (item_target!==null) { $("#"+item_target).trigger("click"); }
+            }
+        });
+
+<?php if (count($app->getOption('available_languages', array()))>1) : ?>
+    <?php foreach ($app->getOption('available_languages') as $ln) : ?>
+    // refresh all feeds
+    $("#lang_<?php echo $ln; ?>").click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'changeLanguage', 'lang'=>$ln), '&'); ?>");
+    });
+    <?php endforeach; ?>
+<?php endif; ?>
+
+    // refresh all feeds
+    $("#add_refreshall").click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'refreshAllFeeds'), '&'); ?>");
+    });
+
+    // add feed
+    $("#add_new_feed").click(function(){
+<?php if ($user_is_logged) : ?>
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'user:addNewFeed'), '&'); ?>");
+<?php endif; ?>
+    });
+
+    // preferences
+    $("#add_preferences").click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'user:preferences'), '&'); ?>");
+    });
+
+    // about
+    $("#about").click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'about'), '&'); ?>");
+    });
+
+    // navigation tools
+    $("#navigation_tools").click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'navigationTools'), '&'); ?>");
+    });
+
+    // sitemap
+    $("#sitemap").click(function(){
+        linkGoto("<?php echo buildUrl(array('action'=>'sitemap'), '&'); ?>");
+    });
+
+    // signin
+    $("#user_signin").click(function( event ) {
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'user:signin'), '&'); ?>");
+    });
+
+    // login
+    $("#user_login").click(function( event ) {
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'user:login'), '&'); ?>");
+    });
+
+    // logout
+    $("#user_logout").click(function(){
+        appAjaxLoad("<?php echo buildUrl(array('action'=>'user:logout'), '&'); ?>");
+    });
+
+    // admin
+    $("#user_admin_mode").click(function(){
+        linkGoto("<?php echo buildUrl(array('action'=>'admin:index'), '&'); ?>");
+    });
+
+});
+</script>
+<ul id="feedreader_topmenu" data-accesskey="<?php echo _T('navhelp:menu_tooltip'); ?>">
+
+    <li><a id="user_info" title="<?php
+        echo ($user_is_logged ? _T('you_are_logged_in') : _T('you_are_not_logged_in')); 
+    ?>"><span class="ui-icon ui-icon-<?php
+        echo ($user_is_logged ? 'locked' : 'cancel'); 
+    ?>"></span><?php 
+        echo ($user_is_logged ? $user->read('username') : _T('guest')); 
+    ?></a><ul>
+<?php if ($user_is_logged) : ?>
+        <li><a id="user_logout" title="<?php echo _T('clic_here_to_close_session'); ?>"><span class="ui-icon ui-icon-power"></span><?php echo _T('logout'); ?></a></li>
+    <?php if ($user->isAdmin()) : ?>
+        <li><a id="user_admin_mode" title="<?php echo _T('clic_here_to_administrate_this_application'); ?>"><span class="ui-icon ui-icon-wrench"></span><?php echo _T('administrate'); ?></a></li>
+    <?php endif; ?>
+<?php else: ?>
+    <?php if ($app_is_installed) : ?>
+        <li><a id="user_login" title="<?php echo _T('clic_here_to_open_a_session'); ?>"><span class="ui-icon ui-icon-key"></span><?php echo _T('login'); ?></a></li>
+    <?php endif; ?>
+        <li><a id="user_signin" title="<?php echo _T('clic_here_to_create_an_account'); ?>"><span class="ui-icon ui-icon-person"></span><?php echo _T('create_account'); ?></a></li>
+<?php endif; ?>
+        <li class="<?php echo ($user_is_logged ? '' : 'ui-state-disabled'); ?>"><a id="add_preferences" title="<?php
+            echo ($user_is_logged ? _T('clic_here_to_set_your_preferences') : _T('you_must_be_logged_in_to_use_this_tool'));
+        ?>" accesskey=","><span class="ui-icon ui-icon-gear"></span><?php echo _T('preferences'); ?></a></li>
+    </ul></li>
+
+    <li>
+        <a href="#" title="<?php
+            echo _T('application_menu');
+        ?>"><span class="ui-icon ui-icon-carat-2-n-s"></span><?php echo _T('menu'); ?></a>
+        <ul>
+    <?php if ($app_is_installed) : ?>
+            <li class="<?php echo ($reader_is_null ? 'ui-state-disabled' : ''); ?>"><a id="add_refreshall" title="<?php
+                echo _T('clic_here_to_refresh_all_the_feeds');
+            ?>"><span class="ui-icon ui-icon-refresh"></span><?php echo _T('refresh_all_feeds'); ?></a></li>
+    <?php endif; ?>
+            <li class="<?php echo ($user_is_logged ? '' : 'ui-state-disabled'); ?>"><a id="add_new_feed" title="<?php
+                echo ($user_is_logged ? _T('clic_here_to_add_a_new_feed') : _T('you_must_be_logged_in_to_use_this_tool'));
+            ?>" accesskey="N"><span class="ui-icon ui-icon-plus"></span><?php echo _T('add_new_feed'); ?></a></li>
+
+<?php if (count($app->getOption('available_languages', array()))>1) : ?>
+            <li>
+                <a href="#" title="<?php
+                    echo _T('change_application_language');
+                ?>"><span class="ui-icon ui-icon-flag"></span><?php echo _T('language'); ?></a>
+                <ul>
+    <?php foreach ($app->getOption('available_languages') as $ln_iso=>$ln) : ?>
+                    <li><a id="lang_<?php echo $ln; ?>" lang="<?php echo $ln; ?>" title="<?php
+                        echo _T('see_this_app_in', array('lang'=>Locale::getDisplayName($ln_iso)));
+                    ?>"><?php
+                        if ($current_language===$ln) echo '<span class="ui-icon ui-icon-check"></span>';
+                    ?><?php echo Locale::getDisplayLanguage($ln); ?></a></li>
+    <?php endforeach; ?>
+                </ul>
+            </li>
+<?php endif; ?>
+
+            <li><a id="navigation_tools" title="<?php echo _T('clic_here_to_see_application_navigation_tools'); ?>" accesskey="H">
+                <span class="ui-icon ui-icon-lightbulb"></span>
+                <?php echo _T('navigation_tools'); ?>
+            </a></li>
+
+    <?php if ($app_is_installed) : ?>
+            <li><a id="sitemap" title="<?php echo _T('application_sitemap'); ?>" accesskey="M">
+                <span class="ui-icon ui-icon-clipboard"></span>
+                <?php echo _T('sitemap'); ?>
+            </a></li>
+    <?php endif; ?>
+
+            <li><a id="about" title="<?php echo _T('about'); ?>">
+                <span class="ui-icon ui-icon-signal-diag"></span>
+                <small><?php echo RSS_READER_NAME.' '.RSS_READER_VERSION; ?></small>
+            </a></li>
+
+        </ul>
+    </li>
+</ul>

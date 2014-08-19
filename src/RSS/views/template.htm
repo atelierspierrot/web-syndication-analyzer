@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="<?php echo str_replace('_', '-', i18n::getInstance()->getCurrentLanguageIso()); ?>">
+<head>
+    <meta charset="<?php echo @$charset; ?>" />
+    <title><?php echo @$page_title; ?></title>
+    <!-- global page styles -->
+    <link rel="stylesheet" href="<?php echo ASSETS_DIR; ?>styles.css" />
+    <!-- jQuery library -->
+    <script src="<?php echo ASSETS_DIR; ?>jquery-<?php echo $app->getOption('jquery_version'); ?>.min.js"></script>
+    <script> $.uiBackCompat = false; </script>
+    <!-- jQuery common plugins -->
+    <script src="<?php echo ASSETS_DIR; ?>jquery-plugins/jquery.cookie.js"></script>
+    <script src="<?php echo ASSETS_DIR; ?>jquery-plugins/jquery.validate.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="<?php echo ASSETS_DIR; ?>jquery-ui-<?php echo $app->getOption('jquery_ui_version'); ?>.min.js"></script>
+    <link rel="stylesheet" href="<?php echo ASSETS_DIR.$theme; ?>/<?php echo $app->getOption('theme_file'); ?>" />
+    <!-- jQuery MultiSelect -->
+    <script src="<?php echo ASSETS_DIR; ?>jquery-plugins/jquery.multiselect.min.js"></script>
+    <script src="<?php echo ASSETS_DIR; ?>jquery-plugins/jquery.multiselect.filter.js"></script>
+    <link rel="stylesheet" href="<?php echo ASSETS_DIR; ?>jquery-plugins/jquery.multiselect.css" />
+    <link rel="stylesheet" href="<?php echo ASSETS_DIR; ?>jquery-plugins/jquery.multiselect.filter.css" />
+<script>
+var LOADERIMG_TXT = "<?php echo _T('loading'); ?>";
+var FORMLOADER_TXT = "<?php echo _T('processing'); ?>";
+var ASSETS_DIR = "<?php echo ASSETS_DIR; ?>";
+var onPageLoad_data = {};
+<?php if (!empty($info)) : ?>
+onPageLoad_data.info = ["<?php echo implode ('","', $info); ?>"];
+<?php endif; ?>
+<?php if (!empty($error)) : ?>
+onPageLoad_data.error = ["<?php echo implode ('","', $error); ?>"];
+<?php endif; ?>
+<?php if (!empty($refresh)) : ?>
+onPageLoad_data.refresh = <?php echo ($refresh===true ? 'true' : 'false'); ?>;
+<?php endif; ?>
+<?php if (!empty($redirect)) : ?>
+onPageLoad_data.redirect = "<?php echo $redirect; ?>";
+<?php endif; ?>
+<?php if (!empty($callback)) : ?>
+onPageLoad_data.callback = ["<?php echo implode ('","', $callback); ?>"];
+<?php endif; ?>
+$(function() {
+    $.ui.dialog.prototype.options.closeText = "<?php echo _T('close'); ?>";
+    $.validator.messages.required = "<?php echo _T('required_field'); ?>";
+    $.validator.messages.url = "<?php echo _T('invalid_url'); ?>";
+    $.validator.messages.email = "<?php echo _T('invalid_email'); ?>";
+    $.validator.messages.equalTo = "<?php echo _T('enter_the_same_value'); ?>";
+    appTreatData( onPageLoad_data );
+});
+</script>
+    <!-- APP scripts/styles -->
+    <script src="<?php echo ASSETS_DIR; ?>scripts.js"></script>
+    <link rel="stylesheet" href="<?php echo ASSETS_DIR; ?>post_styles.css" />
+</head>
+<body>
+
+<noscript>
+    <div class="ui-state-error margin-1">
+        <p class="js-noscriptinfo ui-state-error-text padding-1">
+            <img src="<?php echo ASSETS_DIR; ?>img/exclamation.png" alt="warning" />
+            <?php echo _T('noscript_warning', array('page_url'=>APP_Helper::getCurrentUrl(true))); ?>
+        </p>
+    </div>
+</noscript>
+
+    <div id="absolute_info"><a href="#" data-accesskeyhelper="<?php echo _T('navigation_helpers'); ?>">&nbsp;</a></div>
+
+    <div id="feedreader_header"><?php echo @$header; ?></div>
+
+    <div id="feedreader_content" role="main"><?php echo @$content; ?></div>
+
+    <div id="feedreader_footer"><?php echo @$footer; ?></div>
+
+    <div id="msg_box" style="display:none;"></div>
+
+    <div id="dialog_box" title=""></div>
+
+</body>
+</html>

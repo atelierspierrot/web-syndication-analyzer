@@ -1,0 +1,21 @@
+<?php
+
+?>
+<?php
+if (!isAjaxRequest()) {
+    echo $app->renderView(
+        $app->getOption('breadcrumb_template')
+    );
+}
+?>
+<div class="ui-corner-all margin-1">
+
+    <h2><?php
+        echo (empty($error_type) ? 'Unknown' : $error_type);
+    ?> Error</h2>
+    
+    <p><?php
+        echo (!empty($error_str) ? $error_str : _T('error_info'));
+    ?></p>
+
+</div>

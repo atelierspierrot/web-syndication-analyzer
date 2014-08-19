@@ -1,0 +1,45 @@
+<?php
+
+?>
+<?php
+if (!isAjaxRequest()) {
+    echo $app->renderView(
+        $app->getOption('breadcrumb_template')
+    );
+}
+?>
+<script type="text/javascript">
+$(function(){
+    $("#overview_accordion").accordion({
+        header: "h3", heightStyle: "content", collapsible: true
+    });
+});
+</script>
+
+<div id="overview_accordion" class="accordion">
+
+<?php if (count($feeds_items)===0) : ?>
+
+    <p><?php echo _T('no_favorite_for_now'); ?></p>
+
+<?php else : ?>
+
+    <?php foreach($feeds_items as $i=>$item) : ?>
+        <h3 title="<?php
+            echo _T('toggle_content');
+        ?>"><?php echo $item->title->content; ?><br /><small><?php
+            echo truncateString($item->description->content, $app->getOption('extract_length'));
+        ?></small></h3>
+        <div>
+        <?php
+            echo $app->renderView(
+                $app->getOption('entry_item_template'),
+                array( 'xml' => $item, 'show_favorites_tools' => false, 'show_original_feed' => true )
+            );
+        ?>
+        </div>
+    <?php endforeach; ?>
+
+<?php endif; ?>
+
+</div>

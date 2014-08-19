@@ -60,21 +60,21 @@ $(function() {
     <div class="float-right">
 
 <?php if (!empty($item_author)) : ?>
-        <?php echo $app->renderView(
-            $app->getOption('person_tag_widget_template'),
+        <?php echo \RSS\Helper::renderView(
+            \RSS\Helper::getTemplate('person_tag_widget_template'),
             array( 'xml' => $item_author, 'alt_class' => $alt_class.' item' )
         ); ?>
 <?php endif; ?>
 
 <?php if (!empty($item_date)) : ?>
-        <?php echo $app->renderView( $app->getOption('date_tag_widget_template'), array('xml'=>$item_date) ); ?>
+        <?php echo \RSS\Helper::renderView( \RSS\Helper::getTemplate('date_tag_widget_template'), array('xml'=>$item_date) ); ?>
 <?php endif; ?>
 
 <?php if (true===$show_favorites_tools) : ?>
 
 <?php elseif (true===$show_original_feed && !empty($xml->original_feed)) : ?>
-        <?php echo $app->renderView(
-            $app->getOption('image_tag_widget_template'),
+        <?php echo \RSS\Helper::renderView(
+            \RSS\Helper::getTemplate('image_tag_widget_template'),
             array( 'xml' => $xml->original_feed->getChannel(), 'feed_url' => $xml->original_feed_url, 'max_width' => 29, 'max_height' => 29, 'alt_class' => 'float-right' )
         ); ?>
 <?php endif; ?>

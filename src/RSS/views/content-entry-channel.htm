@@ -13,8 +13,8 @@ $channel_subtitle = $xml->getTagItem('subtitle');
 
     <div class="ui-helper-reset ui-widget-header ui-corner-left">
 <?php if (!empty($channel_image)) : ?>
-    <?php echo $app->renderView(
-        $app->getOption('image_tag_template'),
+    <?php echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('image_tag_template'),
         array(
             'xml' => $channel_image, 'alt_class' => $alt_class.' channel',
             'max_width' => 120, 'max_height'=>120
@@ -28,7 +28,7 @@ $channel_subtitle = $xml->getTagItem('subtitle');
         <div class="channel title">
 <?php if (!empty($channel_link)) : ?>
         <a href="<?php echo $channel_link->content; ?>" title="<?php 
-            echo (isset($channel_link->title) ? $channel_link->title->content : _T('see_online'));
+            echo (isset($channel_link->title) ? $channel_link->title->content : 'See online');
         ?>">
 <?php endif; ?>
             <?php echo $channel_title->content; ?>

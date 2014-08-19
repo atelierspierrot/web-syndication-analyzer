@@ -45,7 +45,7 @@ class Parser
 
     public function parse($tag_name = null)
     {
-		$namespaces = $this->feed->getNamespaces();
+        $namespaces = $this->feed->getNamespaces();
         $specs = \RSS\Helper::getSpecifications( $this->feed->getProtocol(), $this->feed->getVersion() );
         if (!empty($tag_name) && isset($specs[$tag_name])) {
 
@@ -58,17 +58,17 @@ class Parser
                     if (isset($spe['rename'])) {
                         $var = $spe['rename'];
                     }
-if (self::$_debug) echo '<br />adding data for tag name "'.$var.'" : '.var_export($tagval,1);
+                    if (self::$_debug) echo '<br />adding data for tag name "'.$var.'" : '.var_export($tagval,1);
                     $this->addData($var, $tagval);
                 }
             }
         } else {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('RSS parser method requires a valid tag name argument (got "%s")!', $tag_name)
             );
         }
 
-if (self::$_debug) echo '<hr />finally got data : '.var_export($this->getData(),1);
+        if (self::$_debug) echo '<hr />finally got data : '.var_export($this->getData(),1);
         return $this->getData();
     }
 
@@ -77,7 +77,7 @@ if (self::$_debug) echo '<hr />finally got data : '.var_export($this->getData(),
         array $global_specifications, $is_attribute=false
     ) {
 
-if (self::$_debug) echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var_export($tag_specifications,1); //.' on value '.var_export($xml,1);
+        if (self::$_debug) echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var_export($tag_specifications,1); //.' on value '.var_export($xml,1);
 
         // type of the field
         if (isset($tag_specifications['type'])) {
@@ -85,7 +85,7 @@ if (self::$_debug) echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var
         }
         // else unknown type : exception
         else {
-            throw new LogicException(
+            throw new \LogicException(
                 sprintf('Type not defined for tag_name "%s"!', $tag_name)
             );
         }
@@ -119,10 +119,8 @@ if (self::$_debug) echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var
 //                $field->type = $type;
                 $field->type = $field_type;
 
-                foreach($global_specifications[$field_type] as $f_name=>$f_specs)
-                {
-                    if ($f_name==='content' && !isset($value->content))
-                    {
+                foreach($global_specifications[$field_type] as $f_name=>$f_specs) {
+                    if ($f_name==='content' && !isset($value->content)) {
                         $f_name = $tag_name;
                         $value = $xml;
                     }
@@ -130,35 +128,30 @@ if (self::$_debug) echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var
                         $value, $f_name, $f_specs, $global_specifications, 
                             (isset($f_specs['attribute']) && $f_specs['attribute']==='1')
                     );
-                    if (!is_null($tag))
-                    {
+                    if (!is_null($tag)) {
                         $field->{$f_name} = $tag;
                     }
                 }
-if (self::$_debug) echo '<br />=> special object : '.var_export($field,1);
+                if (self::$_debug) echo '<br />=> special object : '.var_export($field,1);
             }
 
             // RSS_Field object
-            else
-            {
-                if ($field_type==='list' && isset($tag_specifications['listitem_type']))
-                {
+            else {
+                if ($field_type==='list' && isset($tag_specifications['listitem_type'])) {
                     $field_settings['listitem_type'] = $tag_specifications['listitem_type'];
                 }
-                if (isset($tag_specifications['rename']))
-                {
+                if (isset($tag_specifications['rename'])) {
                     $tag_name = $tag_specifications['rename'];
                 }
                 $field = new \RSS\Item( $field_type, $value, $tag_name, $field_settings );
-if (self::$_debug) echo '<br />=> object : '.var_export($field,1);
+                if (self::$_debug) echo '<br />=> object : '.var_export($field,1);
             }
             
             return $field;
         }
 
-        elseif (isset($tag_specifications['required']) && $tag_specifications['required']==='1' && RSSLIB_DEBUG)
-        {
-            throw new RuntimeException(
+        elseif (isset($tag_specifications['required']) && $tag_specifications['required']==='1' && self::$_debug) {
+            throw new \RuntimeException(
                 sprintf('Required field "%s" is empty!', $tag_name)
             );
         }

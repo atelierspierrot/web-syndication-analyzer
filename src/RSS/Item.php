@@ -3,7 +3,10 @@
 namespace RSS;
 
 use \DateTime;
+use \Locale;
 use \SimpleXMLElement;
+
+use \RSS\Helper;
 use \RSS\Abstracts\XMLDataObject;
 use \RSS\Abstracts\ItemInterface;
 use \RSS\Abstracts\ParserInterface;
@@ -28,7 +31,7 @@ class Item
     {
         $this
             ->setType( $type )
-            ->setXmlValue( $tag_value instanceOf SimpleXMLElement ? \RSS\Helper::getContent( $tag_value ) : $tag_value )
+            ->setXmlValue( $tag_value instanceOf SimpleXMLElement ? Helper::getContent( $tag_value ) : $tag_value )
             ->setName( $tag_name );
 
         if ($tag_value instanceOf SimpleXMLElement) {
@@ -141,7 +144,7 @@ class Item
     public function parse()
     {
         if (is_object($this->xml)) {
-            $this->attributes = \RSS\Helper::getAttributesAsArray($this->getXml());
+            $this->attributes = Helper::getAttributesAsArray($this->getXml());
         }
 
         switch($this->type) {
@@ -173,7 +176,7 @@ class Item
                 $this->content = array();
                 $type = isset($this->settings['listitem_type']) ? $this->settings['listitem_type'] : 'string';
                 foreach($this->xml_value as $_value) {
-                    $this->content[] = new \RSS\Item( $type, $_value, $this->name, $this->settings );
+                    $this->content[] = new Item( $type, $_value, $this->name, $this->settings );
                 }
                 break;
             default:
@@ -193,31 +196,31 @@ class Item
     
     public function getTagItem($tag_name)
     {
-        return \RSS\Helper::findTagByCommonName( $this, $tag_name );
+        return Helper::findTagByCommonName( $this, $tag_name );
     }
 
 // -------------------
 // RSS Item Interface
 // -------------------
-/*
+
     public function getHtml()
     {
         if (!$this->exists()) return '';
         switch($this->type) {
             case 'datetime':
                 $html = '<abbr title="'.$this->content->format('c').'">'
-                    .(class_exists('APP_Helper') ? 
-                        APP_Helper::getLocalizedDateString($this->content) : $this->content->format('D j m Y H:i:s')
+                    .(class_exists('RSS\Helper') ?
+                        \RSS\Helper::getLocalizedDateString($this->content) : $this->content->format('D j m Y H:i:s')
                     ).'</abbr>';
                 break;
             case 'time':
                 $html = $this->content->format('H:i:s');
                 break;
             case 'email':
-                $html = '<a href="mailto:'.$this->content.'" title="'._T('contact_this_email').'">'.$this->content.'</a>';
+                $html = '<a href="mailto:'.$this->content.'" title="Contact this email">'.$this->content.'</a>';
                 break;
             case 'url':
-                $html = '<a href="'.$this->content.'" title="'._T('see_online').'">'.$this->content.'</a>';
+                $html = '<a href="'.$this->content.'" title="See online">'.$this->content.'</a>';
                 break;
             case 'text':
                 $html = $this->xml_value;
@@ -238,7 +241,7 @@ class Item
         }
         return $html;
     }
-*/
+
 }
 
 // Endfile

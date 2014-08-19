@@ -3,8 +3,8 @@
 ?>
 <?php
 if (!isAjaxRequest()) {
-    echo $app->renderView(
-        $app->getOption('breadcrumb_template')
+    echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('breadcrumb_template')
     );
 }
 ?>
@@ -20,20 +20,18 @@ $(function(){
 
 <?php if (count($feeds_items)===0) : ?>
 
-    <p><?php echo _T('no_favorite_for_now'); ?></p>
+    <p>No favorite for now</p>
 
 <?php else : ?>
 
     <?php foreach($feeds_items as $i=>$item) : ?>
-        <h3 title="<?php
-            echo _T('toggle_content');
-        ?>"><?php echo $item->title->content; ?><br /><small><?php
-            echo truncateString($item->description->content, $app->getOption('extract_length'));
+        <h3 title="Toggle content"><?php echo $item->title->content; ?><br /><small><?php
+            echo truncateString($item->description->content, \RSS\Helper::getOption('extract_length'));
         ?></small></h3>
         <div>
         <?php
-            echo $app->renderView(
-                $app->getOption('entry_item_template'),
+            echo \RSS\Helper::renderView(
+                \RSS\Helper::getTemplate('entry_item_template'),
                 array( 'xml' => $item, 'show_favorites_tools' => false, 'show_original_feed' => true )
             );
         ?>

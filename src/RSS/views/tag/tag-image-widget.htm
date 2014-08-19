@@ -17,11 +17,11 @@ if (!empty($channel_image->width)) $width = $channel_image->width->content;
 if (!empty($channel_image->height)) $height = $channel_image->height->content;
 if ($width===0 || $height===0)
 {
-    list($width, $height) = APP_Helper::getImageSize($image_src);
+    list($width, $height) = \RSS\Helper::getImageSize($image_src);
 }
 if (!empty($max_width) || !empty($max_height))
 {
-    list($width, $height) = APP_Helper::imageResize(
+    list($width, $height) = \RSS\Helper::imageResize(
         $width, $height, (!empty($max_width) ? $max_width : 32), (!empty($max_height) ? $max_height : 32)
     );
 }
@@ -41,7 +41,7 @@ $(function() {
         });
 });
 </script>
-<button id="<?php echo $channel_id; ?>_identity" title="<?php echo _T('see_original_feed'); ?>">
+<button id="<?php echo $channel_id; ?>_identity" title="See original feed">
 <?php if (!empty($channel_title)) : ?>
     <span class="ui-helper-hidden"><?php echo $channel_title->content; ?>&nbsp;</span>
 <?php endif; ?>

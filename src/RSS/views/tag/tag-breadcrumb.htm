@@ -21,12 +21,12 @@ $(function() {
 <?php if (!empty($breadcrumb) && count($breadcrumb)>1) : ?>
 <div id="rssreader_breadcrumb" class="<?php echo $alt_class; ?> breadcrumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
 
-    <a id="history_back" title="<?php echo _T('back_to_previous_page'); ?>" class="reactive-btn">
+    <a id="history_back" title="Back to previous page" class="reactive-btn">
         <span class="ui-icon ui-icon-arrowreturnthick-1-w display-inline"></span>
     </a>
 
-    <?php if (APP_Helper::getCurrentUrl()!=buildUrl(array('action'=>'sitemap'), '&', true)) : ?>
-    <a id="goto_sitemap" title="<?php echo _T('application_sitemap'); ?>" class="reactive-btn">
+    <?php if (\RSS\Helper::getCurrentUrl()!=buildUrl(array('action'=>'sitemap'), '&', true)) : ?>
+    <a id="goto_sitemap" title="Application sitemap" class="reactive-btn">
         <span class="ui-icon ui-icon-clipboard display-inline"></span>
     </a>
     <?php endif; ?>
@@ -34,14 +34,12 @@ $(function() {
     <?php foreach ($breadcrumb as $_name=>$_url) : ?>
         <?php $breadcrumb_count++; ?>
         <?php if ($breadcrumb_count<count($breadcrumb) && !empty($_url)) : ?>
-            <a href="<?php echo $_url; ?>" itemprop="url" class="reactive-btn" title="<?php
-                echo _T(see_this_page);
-            ?>">
+            <a href="<?php echo $_url; ?>" itemprop="url" class="reactive-btn" title="See this page">
         <?php else: ?>
             <span class="not-reactive-btn">
         <?php endif; ?>
             <span class="ui-icon ui-icon-carat-1-e display-inline"></span>
-            <span itemprop="title"><?php echo _T($_name); ?></span>
+            <span itemprop="title"><?php echo $_name; ?></span>
         <?php if ($breadcrumb_count<count($breadcrumb) && !empty($_url)) : ?>
             </a>
         <?php else: ?>

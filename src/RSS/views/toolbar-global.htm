@@ -23,8 +23,8 @@ $(function(){
             }
         });
 
-<?php if (count($app->getOption('available_languages', array()))>1) : ?>
-    <?php foreach ($app->getOption('available_languages') as $ln) : ?>
+<?php if (count(\RSS\Helper::getOption('available_languages', array()))>1) : ?>
+    <?php foreach (\RSS\Helper::getOption('available_languages') as $ln) : ?>
     // refresh all feeds
     $("#lang_<?php echo $ln; ?>").click(function(){
         appAjaxLoad("<?php echo buildUrl(array('action'=>'changeLanguage', 'lang'=>$ln), '&'); ?>");
@@ -125,13 +125,13 @@ $(function(){
                 echo ($user_is_logged ? _T('clic_here_to_add_a_new_feed') : _T('you_must_be_logged_in_to_use_this_tool'));
             ?>" accesskey="N"><span class="ui-icon ui-icon-plus"></span><?php echo _T('add_new_feed'); ?></a></li>
 
-<?php if (count($app->getOption('available_languages', array()))>1) : ?>
+<?php if (count(\RSS\Helper::getOption('available_languages', array()))>1) : ?>
             <li>
                 <a href="#" title="<?php
                     echo _T('change_application_language');
                 ?>"><span class="ui-icon ui-icon-flag"></span><?php echo _T('language'); ?></a>
                 <ul>
-    <?php foreach ($app->getOption('available_languages') as $ln_iso=>$ln) : ?>
+    <?php foreach (\RSS\Helper::getOption('available_languages') as $ln_iso=>$ln) : ?>
                     <li><a id="lang_<?php echo $ln; ?>" lang="<?php echo $ln; ?>" title="<?php
                         echo _T('see_this_app_in', array('lang'=>Locale::getDisplayName($ln_iso)));
                     ?>"><?php

@@ -3,8 +3,8 @@
 ?>
 <?php
 if (!isAjaxRequest()) {
-    echo $app->renderView(
-        $app->getOption('breadcrumb_template')
+    echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('breadcrumb_template')
     );
 }
 ?>
@@ -15,7 +15,7 @@ if (!isAjaxRequest()) {
     ?> Error</h2>
     
     <p><?php
-        echo (!empty($error_str) ? $error_str : _T('error_info'));
+        echo (!empty($error_str) ? $error_str : 'ERROR');
     ?></p>
 
 </div>

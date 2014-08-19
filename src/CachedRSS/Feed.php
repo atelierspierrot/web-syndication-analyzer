@@ -1,6 +1,6 @@
 <?php
 
-namespace RSS;
+namespace CachedRSS;
 
 use \SimpleXMLElement;
 use \Patterns\Traits\Optionable;
@@ -227,7 +227,7 @@ class Feed
     
             // items
             $this->items            = new XMLObjectsCollection( $this->xml->channel );
-            foreach ($this->items as $i=>$item) {
+            foreach($this->items as $i=>$item) {
                 $parser             = new Parser( $item, $this, 'item' );
                 $item               = $parser->getData();
                 $item->protocol     = strtolower($this->getProtocol());
@@ -244,7 +244,7 @@ class Feed
     
             // entry
             $this->items            = new XMLObjectsCollection( $this->xml );
-            foreach ($this->items as $i=>$item) {
+            foreach($this->items as $i=>$item) {
                 $parser             = new Parser( $item, $this, 'feed' );
                 $item               = $parser->getData();
                 $item->protocol     = strtolower($this->getProtocol());

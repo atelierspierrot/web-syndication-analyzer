@@ -1,4 +1,17 @@
 <?php
+
+/*
+ * // URL for tests
+    'Cyber Citi (test atom)'        => 'http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks',
+    'Digital Trends (test rss 2.0)' => 'http://www.digitaltrends.com/feed/'
+*/
+
+// options for the RSS feeds
+$options = array(
+    'proxy_http' => 'http://testmail:test@193.56.241.67:8080/',
+    'proxy_https' => 'http://testmail:test@193.56.241.67:8443/',
+);
+
 /**
  * Show errors at least initially
  *
@@ -56,6 +69,10 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
     die('You need to run Composer on your project to use this interface!');
 }
 
+$feed_url = (!empty($_POST) && isset($_POST['feed_url'])) ? $_POST['feed_url'] : '';
+$page_max = (!empty($_POST) && isset($_POST['page_max'])) ? $_POST['page_max'] : 10;
+$current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['current_page'] : 1;
+
 // -----------------------------------
 // Page Content
 // -----------------------------------
@@ -96,11 +113,6 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
             </div>
             <div class="collapse navbar-collapse">
                 <ul id="navigation_menu" class="nav navbar-nav" role="navigation">
-                    <li><a href="index.php">Usage</a></li>
-                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                        </ul>
-                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right" role="navigation">
                     <li><a href="#bottom" title="Go to the bottom of the page">&darr;</a></li>
@@ -115,7 +127,7 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
         <a id="top"></a>
 
         <header role="banner">
-            <h1>The PHP "<em>RSS analyzer</em>" package <br><small>A complete PHP 5.3 package of Markdown syntax parser (extended version)</small></h1>
+            <h1>The PHP "<em>RSS analyzer</em>" package <br><small>A PHP 5.4 package to manipulate RSS feeds</small></h1>
             <div class="hat">
                 <p>These pages show and demonstrate the use and functionality of the <a href="http://github.com/atelierspierrot/rss-analyzer">atelierspierrot/rss-analyzer</a> PHP package you just downloaded.</p>
             </div>
@@ -123,22 +135,110 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
 
         <div id="content" role="main">
 
+            <div class="jumbotron">
+                <form role="form" action="index.php" method="post" id="feed-tester">
+                    <input type="hidden" id="page_max" name="page_max" value="<?php echo $page_max; ?>">
+                    <input type="hidden" id="current_page" name="current_page" value="<?php echo $current_page; ?>">
+
+                    <div class="form-group">
+                        <label for="feed_url">URL feed to test</label>
+                        <input type="url" class="form-control" id="feed_url" name="feed_url" placeholder="Enter feed URL" value="<?php echo $feed_url; ?>">
+                    </div>
+
+                    <span class="help-block">Shortcuts:
+                        <ul>
+                            <li><a href="#" onclick="updateForm('feed_url', 'http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks');">http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks</a></li>
+                            <li><a href="#" onclick="updateForm('feed_url', 'http://www.digitaltrends.com/feed/');">http://www.digitaltrends.com/feed/</a></li>
+                        </ul>
+                    </span>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+
+                </form>
+            </div>
             <article>
 
 <?php
 
-define('RSS_SPECS', __DIR__.'/../src/RSS/specifications/');
+//*/
+if (!empty($feed_url)) {
+    $feed = new \RSS\Feed($feed_url);
+    $feed
+        ->setOptions($options)
+        ->read();
 
-/*
+    $items_count = $feed->getItemsCount();
+    $pages_nb = round($items_count/$page_max);
+
+//var_export($feed);
+//    echo $feed;
+
+    echo '<div class="page-header">'
+        .'<h1>'.$feed->getFeedUrl().'<br /><small>'.$items_count.' items - page '.$current_page.' / '.$pages_nb.'</small></h1>'
+        .'</div>';
+
+    if ($items_count>$page_max) {
+        echo '<ul class="pagination">';
+        for ($i=0; $i<$pages_nb; $i++) {
+            echo '<li';
+            if (($i+1)==$current_page) echo ' class="active"';
+            echo '><a href="#" onclick="updateForm(\'current_page\', '.($i+1).');">'.($i+1).'</a></li>';
+        }
+        echo '</ul>';
+    }
+
+    /*
+    echo "<br /><br />items categories: ";
+    var_export($feed->getItemsCategories());
+    */
+
+    echo "<br />";
+
+    foreach ($feed->getItems($page_max, $page_max*($current_page-1)) as $i=>$item) {
+//    var_export($item);
+        $renderer = new \RSS\Renderer($item);
+        echo "<hr />".$renderer;
+    }
+}
+//*/
+
+/*/
+$feeds = new \RSS\FeedCollection(array(
     'Cyber Citi (test atom)'        => 'http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks',
     'Digital Trends (test rss 2.0)' => 'http://www.digitaltrends.com/feed/'
-*/
-$feed = new \RSS\Feed('http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks');
+));
 
-$feed->read();
+$feeds
+    ->setOptions($options)
+    ->read();
 
-var_export($feed);
+//var_export($feeds);
 
+foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
+
+
+    $feed->read();
+//    var_export($feed);
+
+    echo "<br /><br />feed url: ".$feed->getFeedUrl()."<br />";
+    echo "<br /><br />feed name: ".$feed->getFeedName()."<br />";
+    echo "<br /><br />number of items: ".$feed->getItemsCount()."<br />";
+
+    echo $feed;
+
+    echo "<br /><br />items categories: ";
+    var_export($feed->getItemsCategories());
+    echo "<br />";
+
+    foreach ($feed->getItems(10) as $i=>$item) {
+
+        echo "<br /><br />$i<br />";
+        var_export($item);
+    }
+
+}
+
+//*/
 
 ?>
 
@@ -153,7 +253,7 @@ var_export($feed);
                 This page is <a href="" title="Check now online" id="html_validation">HTML5</a> & <a href="" title="Check now online" id="css_validation">CSS3</a> valid.
             </div>
             <div class="text-muted pull-right">
-                <a href="http://github.com/atelierspierrot/rss-analyzer">atelierspierrot/rss-analyzer</a> package by <a href="https://github.com/piwi">@piwi</a> under <a href="http://spdx.org/licenses/BSD-3-Clause">BSD 3 Clause</a> license.
+                <a href="http://github.com/atelierspierrot/rss-analyzer">atelierspierrot/rss-analyzer</a> package by <a href="https://github.com/piwi">@piwi</a> under <a href="http://www.gnu.org/copyleft/gpl.html">GPL v. 3.0</a> license.
                 <p class="text-muted small" id="user_agent"></p>
             </div>
         </div>
@@ -168,17 +268,18 @@ var_export($feed);
 <!-- Bootstrap -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
-<!-- jQuery.tablesorter plugin
-<script src="assets/js/jquery.tablesorter.min.js"></script>
--->
-
-<!-- jQuery.highlight plugin -->
-<script src="assets/js/highlight.js"></script>
-
 <!-- scripts for demo -->
 <script src="assets/scripts.js"></script>
 
 <script>
+
+function updateForm(fname, fval)
+{
+    jQuery('#'+fname).val(fval);
+    jQuery('#feed-tester').submit();
+    return false;
+}
+
 $(function() {
     getToHash();
     addCSSValidatorLink('assets/styles.css');

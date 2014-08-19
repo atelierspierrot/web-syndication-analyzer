@@ -2,6 +2,7 @@
 
 namespace RSS\Abstracts;
 
+use \RSS\Helper;
 use \RSS\Abstracts\ItemsContainerInterface;
 
 /**
@@ -27,7 +28,7 @@ class StdClass
     
     public function getTagItem($tag_name)
     {
-        return \RSS\Helper::findTagByCommonName($this, $tag_name);
+        return Helper::findTagByCommonName($this, $tag_name);
     }
 
 }

@@ -25,7 +25,7 @@ class SimpleObject
     public function setProtocol($protocol)
     {
         if (!array_key_exists(strtolower($protocol), self::$allowed_protocols)) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('Unknown protocol "%s"!', $protocol)
             );
         }

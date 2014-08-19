@@ -1,6 +1,6 @@
 <?php
 $rss = $rss_reader->getFeed($feed_url);
-if (!isset($limit)) $limit = $app->getOption('max_items_nb',50);
+if (!isset($limit)) $limit = \RSS\Helper::getOption('max_items_nb',50);
 if (!isset($offset)) $offset = 0;
 if (empty($channel_id)) $channel_id = $rss->id;
 if (empty($next_offset)) $next_offset = $offset + $limit;
@@ -13,8 +13,8 @@ if (!isset($loadmore_url))
 ?>
 <?php
 if (!isAjaxRequest()) {
-    echo $app->renderView(
-        $app->getOption('breadcrumb_template')
+    echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('breadcrumb_template')
     );
 }
 ?>
@@ -28,8 +28,8 @@ $(function(){
 </script>
 <div id="<?php echo $channel_id; ?>_wrapper">
 
-    <?php echo $app->renderView(
-        $app->getOption('channel_toolbar_template'),
+    <?php echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('channel_toolbar_template'),
         array(
             'rss' => $rss, 'xml' => $rss->getChannel(),
             'channel_id' => $channel_id, 'categories'=>$rss->getItemsCategories($limit, $offset)
@@ -37,15 +37,15 @@ $(function(){
     ); ?>
 
 <?php
-echo $app->renderView(
-    $app->getOption('entry_channel_template'),
+echo \RSS\Helper::renderView(
+    \RSS\Helper::getTemplate('entry_channel_template'),
     array( 'xml' => $rss->getChannel(), 'channel_id' => $channel_id )
 );
 ?>
 <div id="<?php echo $channel_id; ?>_accordion" class="rss-reader-accordion">
     <?php
-        echo $app->renderView(
-            $app->getOption('items_feed_template'),
+        echo \RSS\Helper::renderView(
+            \RSS\Helper::getTemplate('items_feed_template'),
             array( 'rss' => $rss, 'limit' => $limit, 'offset' => $offset )
         );
     ?>
@@ -68,7 +68,7 @@ $(function(){
 });
 </script>
 <div class="centered-button">
-    <button id="<?php echo $channel_id; ?>_loadmore"><?php echo _T('load_more_contents'); ?></button>
+    <button id="<?php echo $channel_id; ?>_loadmore">Load more contents</button>
 </div>
 <?php endif; ?>
 

@@ -7,8 +7,8 @@ $(function() {
     $("#<?php echo $channel_id; ?>_date").button({ icons: { primary: "ui-icon-clock" } });
 });
 </script>
-<button id="<?php echo $channel_id; ?>_date" title="<?php
-    echo _T('last_updated_at', array('date'=>$xml->content->format('c')));
+<button id="<?php echo $channel_id; ?>_date" title="Last updated at <?php
+    echo $xml->content->format('c');
 ?>">
-    <?php echo APP_Helper::getLocalizedDateString($xml->content); ?>
+    <?php echo \RSS\Helper::getLocalizedDateString($xml->content); ?>
 </button>

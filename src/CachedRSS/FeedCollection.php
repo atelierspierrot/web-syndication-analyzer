@@ -1,74 +1,66 @@
 <?php
 
-namespace RSS;
+namespace CachedRSS;
 
-use \RSS\Feeds_Reader_App_Dependent;
+use \Patterns\Commons\Collection;
 
 /**
  * The global \RSS\Reader object as a singleton instance
  */
-class Reader
-    extends Feeds_Reader_App_Dependent
+class FeedCollection
+    extends Collection
 {
 
     protected $feeds_collection = array();
     protected $feeds_registry = array();
-    
-    function __construct($feeds_collection = null)
+
+    /**
+     * Construction of a collection
+     *
+     * @param   array|string   $feeds_collection    The array of the collection content (optional)
+     */
+    public function __construct($feeds_collection = array())
     {
         if (empty($feeds_collection)) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf('Creation of a "%s" instance with no feeds collection is not allowed!', __CLASS__)
             );
         }
         if (!is_array($feeds_collection)) $feeds_collection = array( $feeds_collection );
-        $use_cache = $this->getRssReaderApp()->getOption('use_cache');
-        if (true===$use_cache) {
-            APP_Helper::makeDir( $this->getCacheDirname() );
-        }
-        $this
-            ->setFeedsCollection($feeds_collection)
-            ->createRegistry();
+        parent::__construct( $feeds_collection );
+        $this->createRegistry();
     }
 
-    function __destruct()
+    public function __destruct()
     {
-        $use_cache = $this->getRssReaderApp()->getOption('use_cache');
-        if (true===$use_cache) {
-            foreach($this->feeds_registry as $name=>$feed) {
-                if (!self::isCached($feed->getFeedUrl())) {
-                    $this->cache($feed, $feed->getFeedUrl());
-                }
-            }
-        }
     }
 
 // -------------------
 // Getters / Setters / Checkers
 // -------------------
 
-    function setFeedsCollection(array $collection)
+    public function setFeedsCollection(array $collection)
     {
         $this->feeds_collection = $collection;
         return $this;
     }
 
-    function getFeedsCollection()
+    public function getFeedsCollection()
     {
         return $this->feeds_collection;
     }
 
-    function countFeedsCollection()
+    public function countFeedsCollection()
     {
         return count($this->feeds_collection);
     }
 
-    function getFeedItemIndex($url)
+    public function getFeedItemIndex($url)
     {
         return array_search($url, $this->feeds_collection);
     }
 
-    function getFeedById($id)
+    public function getFeedById($id)
     {
         foreach($this->feeds_registry as $_feed) {
             if (isset($_feed->id) && $_feed->id===$id) {
@@ -78,7 +70,7 @@ class Reader
         return null;
     }
 
-    function getItemById($id)
+    public function getItemById($id)
     {
         $id_parts = explode('_', $id);
         if (count($id_parts)) {
@@ -91,12 +83,12 @@ class Reader
         return null;
     }
 
-    function getFeedsRegistry()
+    public function getFeedsRegistry()
     {
         return $this->feeds_registry;
     }
 
-    function getFeed( $url )
+    public function getFeed( $url )
     {
         $index = $this->getFeedItemIndex($url);
         if (!empty($index) && array_key_exists($index, $this->feeds_registry)) {
@@ -115,7 +107,7 @@ class Reader
         $this->feeds_registry = array();
         foreach($this->feeds_collection as $i=>$_feed_url) {
             $_url = (true===$use_cache && self::isCached($_feed_url)) ? 
-                APP_Helper::getCacheFilepath($this->getCacheFilename($_feed_url)) : $_feed_url;
+                \RSS\Helper::getCacheFilepath($this->getCacheFilename($_feed_url)) : $_feed_url;
             $this->feeds_registry[$i] = new \RSS\Feed($_feed_url, $i);
         }
     }
@@ -135,7 +127,7 @@ class Reader
     public function cache($feed_object, $feed_url)
     {
         if (!empty($feed_object) && $feed_object->getXml()!==null) {
-            return APP_Helper::cache(
+            return \RSS\Helper::cache(
                 $feed_object->getXml()->asXML(), $this->getCacheFilename($feed_url)
             );
         }
@@ -144,7 +136,7 @@ class Reader
 
     public function isCached($feed_url)
     {
-        return APP_Helper::isCached( $this->getCacheFilename($feed_url) );
+        return \RSS\Helper::isCached( $this->getCacheFilename($feed_url) );
     }
 
     public function getCacheDirname()

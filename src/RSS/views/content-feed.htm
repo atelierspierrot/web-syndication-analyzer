@@ -1,7 +1,7 @@
 <?php
 if (!isset($rss) && !isset($feed_url)) return '';
 if (!isset($rss)) $rss = $rss_reader->getFeed($feed_url);
-if (!isset($limit)) $limit = $app->getOption('max_items_nb',50);
+if (!isset($limit)) $limit = \RSS\Helper::getOption('max_items_nb',50);
 if (!isset($offset)) $offset = 0;
 if (!isset($refresh_accordion)) $refresh_accordion = false;
 $item_counter = 0;
@@ -12,16 +12,14 @@ $item_counter = 0;
     $title = $item->getTagItem('title');
 ?>
     <?php if ($item_counter<$limit) : ?>
-    <div class="accordion-item" id="<?php echo $item->id; ?>_wrapper" data-accesskey="<?php echo _T('navhelp:accordion_tooltip'); ?>">
-        <h3 id="<?php echo $item->id; ?>_header" title="<?php
-            echo _T('toggle_content');
-        ?>"><?php echo $title->content; ?><br /><small><?php
-            echo truncateString($description->content, $app->getOption('extract_length'));
+    <div class="accordion-item" id="<?php echo $item->id; ?>_wrapper" data-accesskey="accordion_tooltip">
+        <h3 id="<?php echo $item->id; ?>_header" title="Toggle content"><?php echo $title->content; ?><br /><small><?php
+            echo truncateString($description->content, \RSS\Helper::getOption('extract_length'));
         ?></small></h3>
         <div id="<?php echo $item->id; ?>_content">
         <?php
-            echo $app->renderView(
-                $app->getOption('entry_item_template'),
+            echo \RSS\Helper::renderView(
+                \RSS\Helper::getTemplate('entry_item_template'),
                 array( 'xml' => $item )
             );
         ?>

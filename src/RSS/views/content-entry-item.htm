@@ -14,17 +14,20 @@ $item_media = $xml->getTagItem('media');
 ?>
 <div class="item-wrapper">
 
-    <?php echo $app->renderView(
-        $app->getOption('item_toolbar_template'),
+    <?php
+    /*
+    echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('item_toolbar_template'),
         array( 'xml' => $xml, 'show_favorites_tools' => $show_favorites_tools, 'show_original_feed' => $show_original_feed )
-    ); ?>
+    );
+    */ ?>
 
     <div class="ui-widget-header margin-1">
 
     <div class="item title margin-1 padding-05">
 <?php if (!empty($item_link)) : ?>
         <a href="<?php echo $item_link->content; ?>" title="<?php 
-            echo (isset($item_link->title) ? $item_link->title->content : _T('see_online'));
+            echo (isset($item_link->title) ? $item_link->title->content : 'see_online');
         ?>">
 <?php endif; ?>
             <?php echo $item_title->content; ?>
@@ -34,8 +37,8 @@ $item_media = $xml->getTagItem('media');
     </div>
 
 <?php if (!empty($item_image)) : ?>
-    <?php echo $app->renderView(
-        $app->getOption('image_tag_template'),
+    <?php echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('image_tag_template'),
         array(
             'xml' => $item_image, 'alt_class' => 'item',
             'max_width' => 120, 'max_height'=>120
@@ -63,10 +66,10 @@ $item_media = $xml->getTagItem('media');
 
 <?php if (!empty($item_categories)) : ?>
         <div class="item categories-list">
-        <?php echo _T('categories'); ?>&nbsp;:&nbsp; 
+        Categories&nbsp;:&nbsp;
     <?php foreach($item_categories->content as $i=>$_cat) : ?>
-        <?php echo $app->renderView(
-            $app->getOption('category_tag_template'),
+        <?php echo \RSS\Helper::renderView(
+            \RSS\Helper::getTemplate('category_tag_template'),
             array( 'xml' => $_cat, 'alt_class' => 'item' )
         ); 
         $i++;
@@ -81,8 +84,8 @@ $item_media = $xml->getTagItem('media');
 
 <?php if (!empty($item_media)) : ?>
     <div class="item media">
-    <?php echo $app->renderView(
-        $app->getOption('media_tag_template'),
+    <?php echo \RSS\Helper::renderView(
+        \RSS\Helper::getTemplate('media_tag_template'),
         array( 'xml' => $item_media, 'alt_class' => 'item' )
     ); ?>
     </div>

@@ -147,7 +147,7 @@ $(function() {
     ?></button>
 
 <?php if (!empty($channel_date)) : ?>
-        <?php echo $app->renderView( $app->getOption('date_tag_widget_template'), array('xml'=>$channel_date) ); ?>
+        <?php echo \RSS\Helper::renderView( \RSS\Helper::getTemplate('date_tag_widget_template'), array('xml'=>$channel_date) ); ?>
 <?php endif; ?>
     </div>
 

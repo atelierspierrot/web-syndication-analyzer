@@ -13,11 +13,11 @@ if (!empty($xml->width)) $width = $xml->width->content;
 if (!empty($xml->height)) $height = $xml->height->content;
 if ($width===0 || $height===0)
 {
-    list($width, $height) = APP_Helper::getImageSize($image_src);
+    list($width, $height) = \RSS\Helper::getImageSize($image_src);
 }
 if (!empty($max_width) || !empty($max_height))
 {
-    list($width, $height) = APP_Helper::imageResize(
+    list($width, $height) = \RSS\Helper::imageResize(
         $width, $height, (!empty($max_width) ? $max_width : 32), (!empty($max_height) ? $max_height : 32)
     );
 }
@@ -26,7 +26,7 @@ if (!empty($max_width) || !empty($max_height))
 
 <?php if (!empty($image_link)) : ?>
     <a href="<?php echo $image_link; ?>"
-        title="<?php echo (!empty($image_description) ? $image_description : _T('see_online')); ?>">
+        title="<?php echo (!empty($image_description) ? $image_description : 'See online'); ?>">
 <?php endif; ?>
 
     <img src="<?php echo $image_src; ?>" alt="<?php 

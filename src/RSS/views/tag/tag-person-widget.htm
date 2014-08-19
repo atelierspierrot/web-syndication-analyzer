@@ -44,19 +44,19 @@ $(function() {
 </script>
 <div style="display: inline;">
 
-<button id="<?php echo $item_id; ?>_author" title="<?php echo _T('author'); ?>">
+<button id="<?php echo $item_id; ?>_author" title="Author">
     <?php echo $author_name; ?>
 </button>
 
 <?php if (!empty($author_uri)) : ?>
 <button id="<?php echo $item_id; ?>_author_uri" data-href="<?php echo $author_uri; ?>">
-    <?php echo _T('see_online_in_new_window'); ?>
+    See online in a new window
 </button>
 <?php endif; ?>
 
 <?php if (!empty($author_email)) : ?>
 <button id="<?php echo $item_id; ?>_author_email" data-href="<?php echo $author_email; ?>">
-    <?php echo _T('contact_this_email'); ?>
+    Contact this email
 </button>
 <?php endif; ?>
 

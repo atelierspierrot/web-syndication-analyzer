@@ -11,6 +11,38 @@ class Helper
 {
 
 // -------------------
+// Static configuration
+// -------------------
+
+    protected static $_config = array(
+        'templates' => array(
+            'breadcrumb_tag_template'   => 'tag/tag-breadcrumb.htm',
+            'category_tag_template'     => 'tag/tag-category.htm',
+            'content_tag_template'      => 'tag/tag-content.htm',
+            'date_tag_template'         => 'tag/tag-date.htm',
+            'date_tag_widget_template'  => 'tag/tag-date-widget.htm',
+            'image_tag_template'        => 'tag/tag-image.htm',
+            'image_tag_widget_template' => 'tag/tag-image-widget.htm',
+            'media_tag_template'        => 'tag/tag-media.htm',
+            'person_tag_template'       => 'tag/tag-person.htm',
+            'person_tag_widget_template'=> 'tag/tag-person-widget.htm',
+        )
+    );
+
+    public static function getOption($name, $default = null)
+    {
+        return isset(self::$_config[$name]) ? self::$_config[$name] : $default;
+    }
+
+    public static function getTemplate($name)
+    {
+        $templates = self::getOption('templates', array());
+        return isset($templates[$name]) ? (
+            file_exists(__DIR__.'/views/'.$templates[$name]) ? __DIR__.'/views/'.$templates[$name] : $templates[$name]
+        ) : null;
+    }
+
+// -------------------
 // Feeds specifications
 // -------------------
 
@@ -19,22 +51,18 @@ class Helper
     public static function getSpecifications( $protocol, $version )
     {
         $specs_name = strtolower($protocol).( !empty($version) ? '-'.$version : '' );
-        if (!isset(self::$specifications[$specs_name]))
-        {
-            $specs_file = rtrim(RSS_SPECS, '/').'/'.$specs_name.'.ini';
+        if (!isset(self::$specifications[$specs_name])) {
+            $specs_file = __DIR__.'/specifications/'.$specs_name.'.ini';
 
             $specs = @parse_ini_file($specs_file, true);
             if (!$specs) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     sprintf('Specifications file for protocol "%s" not found or is not a valid INI file! (searched in "%s"', $specs_name, $specs_file)
                 );
             }
-            if (isset($specs['common']))
-            {
-                foreach($specs as $tag=>$data)
-                {
-                    if ($tag!=='common')
-                    {
+            if (isset($specs['common'])) {
+                foreach($specs as $tag=>$data) {
+                    if ($tag!=='common') {
                         $specs[$tag] = array_merge($specs['common'], $specs[$tag]);
                     }
                 }
@@ -45,7 +73,7 @@ class Helper
     }
 
 // -------------------
-// Feed informations
+// Feed information
 // -------------------
 
     public static function readProtocol( SimpleXMLElement $xml )
@@ -55,8 +83,7 @@ class Helper
     
     public static function readVersion( SimpleXMLElement $xml )
     {
-        foreach($xml->attributes() as $attr=>$attr_val)
-        {
+        foreach($xml->attributes() as $attr=>$attr_val) {
             if ($attr==='version') return $attr_val;
         }
         return null;
@@ -68,7 +95,7 @@ class Helper
     }
     
 // -------------------
-// XMLObject informations
+// XMLObject information
 // -------------------
 
     public static $protocolsCorrespondance = array(
@@ -82,23 +109,16 @@ class Helper
     public static function findTagByCommonName( $xml, $tag_name )
     {
         $found = null;
-        if (is_object($xml) && !empty($xml))
-        {
-            if (array_key_exists($tag_name, self::$protocolsCorrespondance))
-            {
-                foreach(self::$protocolsCorrespondance[$tag_name] as $tag_replaced)
-                {
-                    if (isset($xml->{$tag_replaced}))
-                    {
+        if (is_object($xml) && !empty($xml)) {
+            if (array_key_exists($tag_name, self::$protocolsCorrespondance)) {
+                foreach(self::$protocolsCorrespondance[$tag_name] as $tag_replaced) {
+                    if (isset($xml->{$tag_replaced})) {
                         $found = $xml->{$tag_replaced};
                         break;
                     }
                 }
-            }
-            else
-            {
-                if (isset($xml->{$tag_name}))
-                {
+            } else {
+                if (isset($xml->{$tag_name})) {
                     $found = $xml->{$tag_name};
                 }
             }
@@ -109,8 +129,7 @@ class Helper
     public static function getContent( $xml_item )
     {
         $content = $xml_item->__toString();
-        if ($xml_item)
-        {
+        if ($xml_item) {
             foreach($xml_item->children() as $i=>$child){
                 $content .= $child->asXml();
             }
@@ -120,8 +139,7 @@ class Helper
 
     public static function getAttribute( $xml_item, $attribute_name )
     {
-        foreach($xml_item->attributes() as $attr=>$attr_val)
-        {
+        foreach($xml_item->attributes() as $attr=>$attr_val) {
             if ($attr===$attribute_name) return $attr_val;
         }
         return null;
@@ -130,38 +148,26 @@ class Helper
     public static function getAttributesAsArray( $xml_item )
     {
         $attrs = array();
-        foreach($xml_item->attributes() as $attr=>$attr_val)
-        {
+        foreach($xml_item->attributes() as $attr=>$attr_val) {
             $attrs[$attr] = ($attr_val instanceof SimpleXMLElement) ? self::getContent($attr_val) : $attr_val;
         }
         return $attrs;
     }
 
 // -------------------
-// Files informations
+// Files information
 // -------------------
 
     public static function getFilename( $filepath )
     {
-        return end(explode('/', $filepath));
+        $explode_filepath = explode('/', $filepath);
+        return \Library\Helper\File::getHumanReadableFilename(end($explode_filepath));
     }
 
-    public static function getHumanSize( $size=0, $round=3, $dec_delimiter=',' )
+    public static function isImage($name)
     {
-        $unite_spec = array('o','Ko','Mo','Go','To');
-        $count=0;
-        $c = count($unite_spec);
-        while($size>=1024 && $count<$c-1){
-            $count++;
-            $size/=1024;
-        }
-        if ($round>=0){
-            $arr = pow(10,$round);
-            $number = round($size*$arr)/$arr;
-        } else {
-            $number = $size;
-        }
-        return str_replace('.',$dec_delimiter,$number).' '.$unite_spec[$count];
+        $extension = \Library\Helper\File::getExtension($name);
+        return in_array(strtolower($extension), array('png', 'jpg', 'jpeg', 'gif'));
     }
 
 // -------------------
@@ -177,6 +183,28 @@ class Helper
     {
         if (is_null($in_charset)) $in_charset = mb_detect_encoding($str);
         return iconv($in_charset, $out_charset, $str);
+    }
+
+// -------------------
+// View rendering
+// -------------------
+
+    public static function renderView($view_file, array $options = array())
+    {
+        if ($view_file && @file_exists($view_file)) {
+            if (!empty($options)) {
+                extract($options, EXTR_OVERWRITE);
+            }
+            ob_start();
+            include $view_file;
+            $output = ob_get_contents();
+            ob_end_clean();
+        } else {
+            throw new \RuntimeException(
+                sprintf('View "%s" can\'t be found!', $view_file)
+            );
+        }
+        return $output;
     }
 
 }

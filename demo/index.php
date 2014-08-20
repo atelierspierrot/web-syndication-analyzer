@@ -6,8 +6,35 @@
     'Digital Trends (test rss 2.0)' => 'http://www.digitaltrends.com/feed/'
 */
 
-// options for the RSS feeds
+// options for the syndication feeds
 $options = array(
+    'use_cache' => false,
+    'cache_directory' => __DIR__.'/tmp/', // this MUST exist and be writable
+    'classes'=>array(
+        // content-feed-channel.htm
+        'channel_wrapper'=>'lead clearfix',
+        'channel_title'=>'',
+        'channel_content'=>'',
+        'channel_subtitle'=>'',
+        'channel_description'=>'',
+        'channel_image'=>'',
+        // content-feed-item.htm
+        'item_wrapper'=>'',
+        'item_title'=>'page-header',
+        'item_content'=>'',
+        'item_subtitle'=>'',
+        'item_description'=>'',
+        'item_categories_list'=>'',
+        'item_media'=>'',
+        // tags
+        'tag_category'=>'label label-default',
+        'tag_content'=>'',
+        'tag_date'=>'',
+        'tag_image'=>'pull-right',
+        'tag_media'=>'',
+        'tag_person'=>'',
+    ),
+
 );
 
 /**
@@ -54,12 +81,10 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
 } elseif (file_exists($b = __DIR__.'/../vendor/autoload.php')) {
     require_once $b;
 
-// else try to register `RSS` namespace
+// else try to register `WebSyndication` namespace
 } elseif (file_exists($c = __DIR__.'/../src/SplClassLoader.php')) {
     require_once $c;
-    $classLoader = new SplClassLoader('RSS', __DIR__.'/../src');
-    $classLoader->register();
-    $classLoader = new SplClassLoader('CachedRSS', __DIR__.'/../src');
+    $classLoader = new SplClassLoader('WebSyndication', __DIR__.'/../src');
     $classLoader->register();
 
 // else error, classes can't be found
@@ -67,9 +92,12 @@ if (file_exists($a = __DIR__.'/../../../autoload.php')) {
     die('You need to run Composer on your project to use this interface!');
 }
 
-$feed_url = (!empty($_POST) && isset($_POST['feed_url'])) ? $_POST['feed_url'] : '';
+$feed_urls = (!empty($_POST) && isset($_POST['feed_url'])) ? $_POST['feed_url'] : '';
+$feed_urls = explode(',', $feed_urls);
+$feed_urls = array_filter($feed_urls);
 $page_max = (!empty($_POST) && isset($_POST['page_max'])) ? $_POST['page_max'] : 10;
 $current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['current_page'] : 1;
+$category = (!empty($_POST) && isset($_POST['category'])) ? $_POST['category'] : '';
 
 // -----------------------------------
 // Page Content
@@ -80,7 +108,7 @@ $current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['curr
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Test & documentation of PHP "RSS analyzer" package</title>
+    <title>Test & documentation of PHP "WebSyndication analyzer" package</title>
 <!-- Bootstrap -->
 <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome -->
@@ -107,7 +135,7 @@ $current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['curr
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">RSS analyzer</a>
+                <a class="navbar-brand" href="#">WebSyndication analyzer</a>
             </div>
             <div class="collapse navbar-collapse">
                 <ul id="navigation_menu" class="nav navbar-nav" role="navigation">
@@ -125,9 +153,9 @@ $current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['curr
         <a id="top"></a>
 
         <header role="banner">
-            <h1>The PHP "<em>RSS analyzer</em>" package <br><small>A PHP 5.4 package to manipulate RSS feeds</small></h1>
+            <h1>The PHP "<em>WebSyndication analyzer</em>" package <br><small>A PHP 5.3 package to manipulate syndication feeds</small></h1>
             <div class="hat">
-                <p>These pages show and demonstrate the use and functionality of the <a href="http://github.com/atelierspierrot/rss-analyzer">atelierspierrot/rss-analyzer</a> PHP package you just downloaded.</p>
+                <p>These pages show and demonstrate the use and functionality of the <a href="http://github.com/atelierspierrot/web-syndication-analyzer">atelierspierrot/web-syndication-analyzer</a> PHP package you just downloaded.</p>
             </div>
         </header>
 
@@ -137,12 +165,14 @@ $current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['curr
                 <form role="form" action="index.php" method="post" id="feed-tester">
                     <input type="hidden" id="page_max" name="page_max" value="<?php echo $page_max; ?>">
                     <input type="hidden" id="current_page" name="current_page" value="<?php echo $current_page; ?>">
+                    <input type="hidden" id="category" name="category" value="<?php echo $category; ?>">
 
                     <div class="form-group">
-                        <label for="feed_url">URL feed to test</label>
-                        <input type="url" class="form-control" id="feed_url" name="feed_url" placeholder="Enter feed URL" value="<?php echo $feed_url; ?>">
+                        <label for="feed_url">URL feed(s) to test</label>
+                        <input type="url" class="form-control" id="feed_url" name="feed_url" placeholder="Enter feed URL" value="<?php echo join(',', $feed_urls); ?>">
                     </div>
 
+                    <span class="help-block">You can define multiple feeds URLs separated by coma.</span>
                     <span class="help-block">Shortcuts:
                         <ul>
                             <li><a href="#" onclick="updateForm('feed_url', 'http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks');">http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks</a></li>
@@ -158,89 +188,79 @@ $current_page = (!empty($_POST) && isset($_POST['current_page'])) ? $_POST['curr
 
 <?php
 
-//*/
-if (!empty($feed_url)) {
-    $feed = new \RSS\Feed($feed_url);
-    $feed
-        ->setOptions($options)
-        ->read();
+\WebSyndication\Helper::setOptions($options);
+$feeds = null;
 
-    $items_count = $feed->getItemsCount();
-    $pages_nb = round($items_count/$page_max);
+if (!empty($feed_urls)) {
 
-//var_export($feed);
-//    echo $feed;
-
-    echo '<div class="page-header">'
-        .'<h1>'.$feed->getFeedUrl().'<br /><small>'.$items_count.' items - page '.$current_page.' / '.$pages_nb.'</small></h1>'
-        .'</div>';
-
-    if ($items_count>$page_max) {
-        echo '<ul class="pagination">';
-        for ($i=0; $i<$pages_nb; $i++) {
-            echo '<li';
-            if (($i+1)==$current_page) echo ' class="active"';
-            echo '><a href="#" onclick="updateForm(\'current_page\', '.($i+1).');">'.($i+1).'</a></li>';
-        }
-        echo '</ul>';
-    }
-
-    /*
-    echo "<br /><br />items categories: ";
-    var_export($feed->getItemsCategories());
-    */
-
-    echo "<br />";
-
-    foreach ($feed->getItems($page_max, $page_max*($current_page-1)) as $i=>$item) {
-//    var_export($item);
-        $renderer = new \RSS\Renderer($item);
-        echo "<hr />".$renderer;
-    }
-}
-//*/
-
-/*/
-$feeds = new \RSS\FeedCollection(array(
-    'Cyber Citi (test atom)'        => 'http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks',
-    'Digital Trends (test rss 2.0)' => 'http://www.digitaltrends.com/feed/'
-));
-
-$feeds
-    ->setOptions($options)
-    ->read();
+    $feeds = new \WebSyndication\FeedCollection($feed_urls);
+    $feeds->read();
 
 //var_export($feeds);
 
-foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
+    foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
+        $feed->read();
 
+    //var_export($feed);
 
-    $feed->read();
-//    var_export($feed);
+        $categories = $feed->getItemsCategories();
 
-    echo "<br /><br />feed url: ".$feed->getFeedUrl()."<br />";
-    echo "<br /><br />feed name: ".$feed->getFeedName()."<br />";
-    echo "<br /><br />number of items: ".$feed->getItemsCount()."<br />";
+        if (empty($category)) {
+            $items_count    = $feed->getItemsCount();
+            $items          = $feed->getItems($page_max, $page_max*($current_page-1));
+        } else {
+            $items_count    = count($feed->getItemsCollectionByCategorie($category));
+            $items          = $feed->getItemsCollectionByCategorie($category, $page_max, $page_max*($current_page-1));
+        }
+        $pages_nb       = round($items_count / $page_max);
 
-    echo $feed;
+        echo '<div class="page-header">'
+            .'<h1>'.$feed->getFeedUrl().'<br /><small>'
+            .$feed->getProtocol().' '.$feed->getVersion().' - '.$items_count.' items - page '.$current_page.' / '.$pages_nb;
+        if (!empty($categories)) {
+            echo ' - Categories: <select class="form-control" onchange="updateForm(\'category\', $(\'option:selected\').val());" style="width:180px;display:inline;">';
+            echo '<option>Choose ...</option>';
+            foreach ($categories as $category_name) {
+                echo '<option value="'.$category_name.'"'
+                    .($category_name==$category ? ' selected' : '')
+                    .'>'.$category_name.'</option>';
+            }
+            echo '</select>';
+        }
+        echo '</small></h1></div>';
 
-    echo "<br /><br />items categories: ";
-    var_export($feed->getItemsCategories());
-    echo "<br />";
+        if ($items_count>$page_max) {
+            echo '<ul class="pagination">';
+            for ($i=0; $i<$pages_nb; $i++) {
+                echo '<li';
+                if (($i+1)==$current_page) echo ' class="active"';
+                echo '><a href="#" onclick="updateForm(\'current_page\', '.($i+1).');">'.($i+1).'</a></li>';
+            }
+            echo '</ul>';
+        }
 
-    foreach ($feed->getItems(10) as $i=>$item) {
+        $renderer = new \WebSyndication\Renderer($feed);
+        echo '<hr />'.$renderer;
 
-        echo "<br /><br />$i<br />";
-        var_export($item);
+        foreach ($items as $item) {
+    //    var_export($item);
+            $renderer = new \WebSyndication\Renderer($item);
+            echo "<hr />".$renderer;
+        }
     }
-
 }
-
-//*/
-
 ?>
-
             </article>
+            <hr />
+
+<?php
+if (!empty($feeds)) {
+    foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
+        echo '<strong>Original raw feed for '.$feed->getFeedUrl().'</strong>'
+            .'<pre class="pre-scrollable">'.htmlentities($feed->getXml()->asXml()).'</pre>';
+    }
+}
+?>
 
         </div>
     </div>
@@ -251,7 +271,7 @@ foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
                 This page is <a href="" title="Check now online" id="html_validation">HTML5</a> & <a href="" title="Check now online" id="css_validation">CSS3</a> valid.
             </div>
             <div class="text-muted pull-right">
-                <a href="http://github.com/atelierspierrot/rss-analyzer">atelierspierrot/rss-analyzer</a> package by <a href="https://github.com/piwi">@piwi</a> under <a href="http://www.gnu.org/copyleft/gpl.html">GPL v. 3.0</a> license.
+                <a href="http://github.com/atelierspierrot/web-syndication-analyzer">atelierspierrot/web-syndication-analyzer</a> package by <a href="https://github.com/piwi">@piwi</a> under <a href="http://www.gnu.org/copyleft/gpl.html">GPL v. 3.0</a> license.
                 <p class="text-muted small" id="user_agent"></p>
             </div>
         </div>
@@ -316,7 +336,7 @@ $(function() {
 
 // list GitHub infos
     initHandler( 'github' );
-    var github = 'https://api.github.com/repos/atelierspierrot/rss-analyzer/';
+    var github = 'https://api.github.com/repos/atelierspierrot/web-syndication-analyzer/';
     // commits list
     var github_commits = $('#github').find('#commits_list');
     getGitHubCommits(github, function(data){

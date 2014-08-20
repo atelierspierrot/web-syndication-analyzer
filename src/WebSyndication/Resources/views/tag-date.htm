@@ -1,0 +1,10 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+if (!isset($alt_class)) $alt_class = '';
+
+?>
+<span class="tag-date <?php echo \WebSyndication\Helper::getClass('tag_date'); ?> <?php echo $alt_class; ?>">
+    <abbr title="<?php echo $xml->content->format('c'); ?>">
+        <?php echo $xml->content->format(\WebSyndication\Helper::getOption('date_format', 'd, M Y H:i:s')); ?>
+    </abbr>
+</span>

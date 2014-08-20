@@ -1,4 +1,4 @@
-rss-analyzer
+web-syndication-analyzer
 ============
 
-A PHP package to manipulate RSS feeds.
+A PHP package to manipulate syndication feeds.

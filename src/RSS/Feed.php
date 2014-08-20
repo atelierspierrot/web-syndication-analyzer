@@ -3,7 +3,6 @@
 namespace RSS;
 
 use \SimpleXMLElement;
-use \Patterns\Traits\Optionable;
 
 use \RSS\Helper;
 use \RSS\Abstracts\XMLDataObject;
@@ -16,11 +15,6 @@ class Feed
     extends XMLDataObject
     implements ParserInterface, ReaderInterface, ItemsContainerInterface
 {
-
-    /*
-     * @see \Patterns\Traits\Optionable
-     */
-    use Optionable;
 
     protected $feed_url;
     protected $feed_name;

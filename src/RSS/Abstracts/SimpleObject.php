@@ -2,10 +2,13 @@
 
 namespace RSS\Abstracts;
 
+use \Patterns\Abstracts\AbstractOptionable;
+
 /**
  * The simplest RSS object entity
  */
 class SimpleObject
+    extends AbstractOptionable
 {
 
 // -------------------

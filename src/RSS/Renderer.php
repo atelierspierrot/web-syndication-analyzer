@@ -76,9 +76,7 @@ class Renderer
      */
     public function getTemplate($name)
     {
-        return file_exists($name) ? $name : (
-            file_exists(__DIR__.'/views/'.$name) ? __DIR__.'/views/'.$name : null
-        );
+        return Helper::getTemplate($name);
     }
 
 }

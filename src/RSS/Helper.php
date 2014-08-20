@@ -15,7 +15,10 @@ class Helper
 // -------------------
 
     protected static $_config = array(
-        'templates' => array(
+        'resources_dir'                 => 'Resources/',
+        'specifications_dir'            => 'Resources/specifications/',
+        'views_dir'                     => 'Resources/views/',
+        'templates'                     => array(
             'breadcrumb_tag_template'   => 'tag/tag-breadcrumb.htm',
             'category_tag_template'     => 'tag/tag-category.htm',
             'content_tag_template'      => 'tag/tag-content.htm',
@@ -37,8 +40,9 @@ class Helper
     public static function getTemplate($name)
     {
         $templates = self::getOption('templates', array());
+        $views_dir = self::getOption('views_dir');
         return isset($templates[$name]) ? (
-            file_exists(__DIR__.'/views/'.$templates[$name]) ? __DIR__.'/views/'.$templates[$name] : $templates[$name]
+            file_exists(__DIR__.'/'.$views_dir.$templates[$name]) ? __DIR__.'/'.$views_dir.$templates[$name] : $templates[$name]
         ) : null;
     }
 
@@ -51,8 +55,9 @@ class Helper
     public static function getSpecifications( $protocol, $version )
     {
         $specs_name = strtolower($protocol).( !empty($version) ? '-'.$version : '' );
+        $specs_dir = self::getOption('specifications_dir');
         if (!isset(self::$specifications[$specs_name])) {
-            $specs_file = __DIR__.'/specifications/'.$specs_name.'.ini';
+            $specs_file = __DIR__.'/'.$specs_dir.$specs_name.'.ini';
 
             $specs = @parse_ini_file($specs_file, true);
             if (!$specs) {

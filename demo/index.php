@@ -8,8 +8,6 @@
 
 // options for the RSS feeds
 $options = array(
-    'proxy_http' => 'http://testmail:test@193.56.241.67:8080/',
-    'proxy_https' => 'http://testmail:test@193.56.241.67:8443/',
 );
 
 /**

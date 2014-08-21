@@ -1,0 +1,19 @@
+<?php
+/* @var \WebSyndication\FeedsCollection $xml */
+if (!isset($xml) || empty($xml)) return '';
+if (!isset($offset)) $offset = 0;
+if (!isset($limit)) $limit = null;
+
+?>
+<div class="<?php echo \WebSyndication\Helper::getClass('collection_wrapper'); ?>">
+
+<?php
+foreach ($xml->getItems($limit, $offset) as $item) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('feed_item_template'),
+        array('xml' => $item, 'alt_class' => \WebSyndication\Helper::getClass('collection_alt_class'))
+    );
+}
+?>
+
+</div>

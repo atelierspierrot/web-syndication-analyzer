@@ -15,25 +15,56 @@ class Helper
 // -------------------
 
     protected static $_config = array(
-        'use_cache'                     => true,
-        'cache_lifetime'                => 3600,
-        'cache_directory'               => null,
         'resources_dir'                 => 'Resources/',
         'specifications_dir'            => 'Resources/specifications/',
         'views_dir'                     => 'Resources/views/',
+        // templates
         'templates'                     => array(
-            'feed_channel'              => 'content-feed-channel.htm',
-            'feed_item'                 => 'content-feed-item.htm',
+            'feed_channel_template'     => 'content-feed-channel.htm',
+            'feed_collection_template'  => 'content-feed-collection.htm',
+            'feed_item_template'        => 'content-feed-item.htm',
+            'categories_tag_template'   => 'tag-categories.htm',
             'category_tag_template'     => 'tag-category.htm',
+            'channel_tag_template'      => 'tag-channel.htm',
+            'comments_tag_template'     => 'tag-comments.htm',
             'content_tag_template'      => 'tag-content.htm',
             'date_tag_template'         => 'tag-date.htm',
             'image_tag_template'        => 'tag-image.htm',
             'media_tag_template'        => 'tag-media.htm',
             'person_tag_template'       => 'tag-person.htm',
         ),
+        // css classes
         'classes'                       => array(
-
+            'channel_alt_class'         => 'channel',
+            'channel_wrapper'           => 'channel-wrapper',
+            'channel_title'             => 'channel-title',
+            'channel_content'           => 'channel-content',
+            'collection_alt_class'      => 'collection',
+            'collection_wrapper'        => 'collection-wrapper',
+            'item_alt_class'            => 'item',
+            'item_wrapper'              => 'item-wrapper',
+            'item_title'                => 'item-title',
+            'item_content'              => 'item-content',
+            'tag_categories'            => 'tag-categories',
+            'tag_category'              => 'tag-category',
+            'tag_channel'               => 'tag-channel',
+            'tag_comments'              => 'tag-comments',
+            'tag_content'               => 'tag-content',
+            'tag_date'                  => 'tag-date',
+            'tag_image'                 => 'tag-image',
+            'tag_media'                 => 'tag-media',
+            'tag_person'                => 'tag-person',
         ),
+        // images
+        'thumbs_max_width'              => 60,
+        'thumbs_max_height'             => 60,
+        // caching
+        'use_cache'                     => true,
+        'cache_lifetime'                => 3600,
+        'cache_directory'               => null,
+        // pagination
+        'use_pagination'                => true,
+        'pagination_limit'              => 10,
     );
 
     public static function setOptions(array $options)

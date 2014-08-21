@@ -193,61 +193,65 @@ $feeds = null;
 
 if (!empty($feed_urls)) {
 
-    $feeds = new \WebSyndication\FeedCollection($feed_urls);
+    $feeds = new \WebSyndication\FeedsCollection($feed_urls);
     $feeds->read();
 
 //var_export($feeds);
 
-    foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
-        $feed->read();
+    $categories = $feeds->getItemsCategories();
 
-    //var_export($feed);
-
-        $categories = $feed->getItemsCategories();
-
-        if (empty($category)) {
-            $items_count    = $feed->getItemsCount();
-            $items          = $feed->getItems($page_max, $page_max*($current_page-1));
-        } else {
-            $items_count    = count($feed->getItemsCollectionByCategorie($category));
-            $items          = $feed->getItemsCollectionByCategorie($category, $page_max, $page_max*($current_page-1));
-        }
-        $pages_nb       = round($items_count / $page_max);
-
-        echo '<div class="page-header">'
-            .'<h1>'.$feed->getFeedUrl().'<br /><small>'
-            .$feed->getProtocol().' '.$feed->getVersion().' - '.$items_count.' items - page '.$current_page.' / '.$pages_nb;
-        if (!empty($categories)) {
-            echo ' - Categories: <select class="form-control" onchange="updateForm(\'category\', $(\'option:selected\').val());" style="width:180px;display:inline;">';
-            echo '<option>Choose ...</option>';
-            foreach ($categories as $category_name) {
-                echo '<option value="'.$category_name.'"'
-                    .($category_name==$category ? ' selected' : '')
-                    .'>'.$category_name.'</option>';
-            }
-            echo '</select>';
-        }
-        echo '</small></h1></div>';
-
-        if ($items_count>$page_max) {
-            echo '<ul class="pagination">';
-            for ($i=0; $i<$pages_nb; $i++) {
-                echo '<li';
-                if (($i+1)==$current_page) echo ' class="active"';
-                echo '><a href="#" onclick="updateForm(\'current_page\', '.($i+1).');">'.($i+1).'</a></li>';
-            }
-            echo '</ul>';
-        }
-
-        $renderer = new \WebSyndication\Renderer($feed);
-        echo '<hr />'.$renderer;
-
-        foreach ($items as $item) {
-    //    var_export($item);
-            $renderer = new \WebSyndication\Renderer($item);
-            echo "<hr />".$renderer;
-        }
+    if (empty($category)) {
+        $items          = $feeds->getItems();
+    } else {
+        $items          = $feeds->getItemsCollectionByCategorie($category);
     }
+
+    $pagination = new \Library\Tool\Pagination($items, $page_max, $page_max*($current_page-1));
+
+    echo '<div class="page-header"><h1>';
+    foreach ($feeds->getFeedsRegistry() as $i=>$feed) {
+        echo $feed->getFeedUrl().' ('.$feed->getProtocol().' '.$feed->getVersion().') ';
+    }
+    echo '<br /><small>'.$pagination->getItemsNumber().' items - page '.$current_page.' / '.$pagination->getPagesNumber();
+    if (!empty($categories)) {
+        echo ' - Categories: <select class="form-control" onchange="updateForm(\'category\', $(\'option:selected\').val());" style="width:180px;display:inline;">';
+        echo '<option>Choose ...</option>';
+        foreach ($categories as $category_name) {
+            echo '<option value="'.$category_name.'"'
+                .($category_name==$category ? ' selected' : '')
+                .'>'.$category_name.'</option>';
+        }
+        echo '</select>';
+    }
+    echo '</small></h1></div>';
+
+    if ($pagination->exists()) {
+        echo '<ul class="pagination">';
+        foreach ($pagination as $i=>$page) {
+            echo '<li';
+            if ($page->isCurrent()) echo ' class="active"';
+            echo '><a href="#" onclick="updateForm(\'current_page\', '.$page->getPageNumber().');">'.$page->getPageNumber().'</a></li>';
+        }
+        echo '</ul>';
+    }
+
+    $collection = new \WebSyndication\ItemsCollection($pagination->getPaginatedCollection());
+    $renderer = new \WebSyndication\Renderer($collection);
+    $renderer
+        ->setOffset($page_max*($current_page-1))
+        ->setLimit($page_max);
+    echo '<hr />'.$renderer;
+
+    /*
+    foreach ($pagination->getPaginatedCollection() as $item) {
+        //    var_export($item);
+        $renderer = new \WebSyndication\Renderer($item);
+        $renderer
+            ->setOffset($page_max*($current_page-1))
+            ->setLimit($page_max);
+        echo "<hr />".$renderer;
+    }
+    */
 }
 ?>
             </article>

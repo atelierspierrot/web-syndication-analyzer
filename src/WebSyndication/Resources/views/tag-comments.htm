@@ -1,0 +1,10 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+if (!isset($alt_class)) $alt_class = '';
+?>
+<div class="<?php echo \WebSyndication\Helper::getClass('tag_comments'); ?> <?php echo $alt_class; ?>">
+    Comments&nbsp;:&nbsp;
+    <a href="<?php echo $xml->content; ?>" title="See online">
+        <?php echo $xml->content; ?>
+    </a>
+</div>

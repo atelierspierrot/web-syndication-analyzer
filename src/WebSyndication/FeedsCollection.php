@@ -3,14 +3,13 @@
 namespace WebSyndication;
 
 use \Patterns\Commons\Collection;
-use \Patterns\Traits\Optionable;
 
 use \WebSyndication\Feed;
 
 /**
  * The global Feeds collection
  */
-class FeedCollection
+class FeedsCollection
     extends Collection
 {
 
@@ -20,6 +19,7 @@ class FeedCollection
      * Construction of a collection
      *
      * @param   array|string   $feeds_collection    The array of the collection content (optional)
+     * @throws  \InvalidArgumentException if the collection argument is not an array
      */
     public function __construct($feeds_collection = array())
     {
@@ -32,13 +32,12 @@ class FeedCollection
         parent::__construct( $feeds_collection );
     }
 
-    public function __destruct()
-    {
-    }
-
     public function read()
     {
         $this->createRegistry();
+        foreach ($this->feeds_registry as $feed) {
+            $feed->read();
+        }
     }
 
 // -------------------
@@ -115,6 +114,72 @@ class FeedCollection
                 new Feed($this->offsetGet($index), $index)
             ;
         }
+    }
+
+// -------------------
+// Collection manager
+// -------------------
+
+    public function getItemsCount()
+    {
+        $count = 0;
+        foreach ($this->feeds_registry as $feed) {
+            $count += $feed->getItemsCount();
+        }
+        return $count;
+    }
+
+    public function getItems($limit = null, $offset = 0)
+    {
+        $collection = array();
+        foreach ($this->feeds_registry as $feed) {
+            foreach ($feed->getItems() as $subitem) {
+                $subitem->parent = $feed;
+                $collection[] = $subitem;
+            }
+        }
+        usort($collection, function($a,$b){
+            $a_date = $a->getTagItem('updated_date');
+            $b_date = $b->getTagItem('updated_date');
+            return (isset($a_date) && isset($b_date) && $a_date<$b_date);
+        });
+        return array_slice($collection, $offset, $limit);
+    }
+
+    public function getItemsCategories($limit = null, $offset = 0)
+    {
+        $categories = array();
+        foreach ($this->getItems($limit, $offset) as $item) {
+            $_cats = $item->getTagItem('category');
+            if ($_cats && is_array($_cats->content)) {
+                foreach($_cats->content as $j=>$_cat) {
+                    $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
+                    if (!in_array($cat_label, $categories)) {
+                        $categories[] = $cat_label;
+                    }
+                }
+            }
+        }
+        natsort($categories);
+        return $categories;
+    }
+
+    public function getItemsCollectionByCategorie($category, $limit = null, $offset = 0)
+    {
+        $collection = array();
+        foreach ($this->getItems() as $item) {
+            $_cats = $item->getTagItem('category');
+            if ($_cats && is_array($_cats->content)) {
+                foreach($_cats->content as $j=>$_cat) {
+                    $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
+                    if ($cat_label==$category) {
+                        $collection[] = $item;
+                        continue 2;
+                    }
+                }
+            }
+        }
+        return array_slice($collection, $offset, $limit);
     }
 
 }

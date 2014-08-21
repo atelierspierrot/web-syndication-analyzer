@@ -1,5 +1,5 @@
 <?php
-/* @var \WebSyndication\StdClass $xml */
+/* @var \WebSyndication\Abstract\StdClass $xml */
 if (!isset($xml) || empty($xml)) return '';
 
 $item_image         = $xml->getTagItem('image');
@@ -11,11 +11,28 @@ $item_subtitle      = $xml->getTagItem('subtitle');
 $item_author        = $xml->getTagItem('author');
 $item_categories    = $xml->getTagItem('category');
 $item_media         = $xml->getTagItem('media');
+$item_comments      = $xml->getTagItem('comments');
 
 ?>
-<div class="item-wrapper <?php echo \WebSyndication\Helper::getClass('item_wrapper'); ?>">
+<div class="<?php echo \WebSyndication\Helper::getClass('item_wrapper'); ?>">
 
-    <div class="item-title <?php echo \WebSyndication\Helper::getClass('item_title'); ?>">
+    <div class="<?php echo \WebSyndication\Helper::getClass('item_title'); ?>">
+
+<?php
+// parent feed if so
+if (isset($alt_class) &&
+    $alt_class==\WebSyndication\Helper::getClass('collection_alt_class') &&
+    property_exists($xml, 'parent')
+) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('channel_tag_template'),
+        array(
+            'xml' => $xml->parent,
+            'alt_class' => \WebSyndication\Helper::getClass('item_alt_class')
+        )
+    );
+}
+?>
 
 <?php if (!empty($item_link)) : ?>
         <a href="<?php echo $item_link->content; ?>" title="<?php 
@@ -31,68 +48,73 @@ $item_media         = $xml->getTagItem('media');
 
     </div>
 
-    <div class="item-content <?php echo \WebSyndication\Helper::getClass('item_content'); ?>">
+    <div class="<?php echo \WebSyndication\Helper::getClass('item_content'); ?>">
 
-<?php if (!empty($item_date)) : ?>
-        <div class="item-date <?php echo \WebSyndication\Helper::getClass('item_date'); ?>">
-            <?php echo \WebSyndication\Helper::renderView(
-                \WebSyndication\Helper::getTemplate('date_tag_template'),
-                array('xml' => $item_date, 'alt_class' => 'item')
-            ); ?>
-        </div>
-<?php endif; ?>
+<?php
+// date
+if (!empty($item_date)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('date_tag_template'),
+        array('xml' => $item_date, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
 
-<?php if (!empty($item_image)) : ?>
-        <?php echo \WebSyndication\Helper::renderView(
-            \WebSyndication\Helper::getTemplate('image_tag_template'),
-            array('xml' => $item_image, 'alt_class' => 'item')
-        ); ?>
-<?php endif; ?>
+// image
+if (!empty($item_image)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('image_tag_template'),
+        array('xml' => $item_image, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
 
-<?php if (!empty($item_subtitle)) : ?>
-        <div class="item-subtitle <?php echo \WebSyndication\Helper::getClass('item_subtitle'); ?>">
-            <?php echo $item_subtitle->getXmlValue(); ?>
-        </div>
-<?php endif; ?>
+// subtitle
+if (!empty($item_subtitle)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('content_tag_template'),
+        array('xml' => $item_subtitle, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
 
-<?php if (!empty($item_description)) : ?>
-        <div class="item-description <?php echo \WebSyndication\Helper::getClass('item_description'); ?>">
-            <?php echo $item_description->getXmlValue(); ?>
-        </div>
-<?php endif; ?>
+// description
+if (!empty($item_description)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('content_tag_template'),
+        array('xml' => $item_description, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
 
-<?php if (!empty($item_categories)) : ?>
-        <div class="item-categories-list <?php echo \WebSyndication\Helper::getClass('item_categories_list'); ?>">
-        Categories&nbsp;:&nbsp;
-    <?php foreach($item_categories->content as $i=>$_cat) : ?>
-        <?php echo \WebSyndication\Helper::renderView(
-            \WebSyndication\Helper::getTemplate('category_tag_template'),
-            array('xml' => $_cat, 'alt_class' => 'item')
-        ); 
-        $i++;
-        if ($i<count($item_categories->content)) echo ', ';
-        ?>
-    <?php endforeach; ?>
-        </div>
-<?php endif; ?>
+// categories list
+if (!empty($item_categories)) {
+    echo \WebSyndication\Helper::renderView(
+            \WebSyndication\Helper::getTemplate('categories_tag_template'),
+            array('xml' => $item_categories, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
 
-<?php if (!empty($item_author)) : ?>
-        <div class="item-author <?php echo \WebSyndication\Helper::getClass('item_author'); ?>">
-            <?php echo \WebSyndication\Helper::renderView(
-                \WebSyndication\Helper::getTemplate('person_tag_template'),
-                array('xml' => $item_author, 'alt_class' => 'item')
-            ); ?>
-        </div>
-<?php endif; ?>
+// author
+if (!empty($item_author)) {
+    echo \WebSyndication\Helper::renderView(
+            \WebSyndication\Helper::getTemplate('person_tag_template'),
+            array('xml' => $item_author, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
 
-<?php if (!empty($item_media)) : ?>
-        <div class="item-media <?php echo \WebSyndication\Helper::getClass('item_media'); ?>">
-            <?php echo \WebSyndication\Helper::renderView(
-                \WebSyndication\Helper::getTemplate('media_tag_template'),
-                array('xml' => $item_media, 'alt_class' => 'item')
-            ); ?>
-        </div>
-<?php endif; ?>
+// comments
+if (!empty($item_comments)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('comments_tag_template'),
+        array('xml' => $item_comments, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
+
+// media
+if (!empty($item_media)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('media_tag_template'),
+        array('xml' => $item_media, 'alt_class' => \WebSyndication\Helper::getClass('item_alt_class'))
+    );
+}
+?>
 
     </div>
 

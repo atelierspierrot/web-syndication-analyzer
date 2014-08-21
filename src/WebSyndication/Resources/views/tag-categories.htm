@@ -1,0 +1,18 @@
+<?php
+if (!isset($xml) || empty($xml)) return '';
+if (!isset($alt_class)) $alt_class = '';
+
+?>
+<div class="<?php echo \WebSyndication\Helper::getClass('tag_categories'); ?> <?php echo $alt_class; ?>">
+    Categories&nbsp;:&nbsp;
+<?php
+foreach($xml->content as $i=>$_cat) {
+    echo \WebSyndication\Helper::renderView(
+            \WebSyndication\Helper::getTemplate('category_tag_template'),
+            array('xml' => $_cat, 'alt_class' => $alt_class)
+    );
+    $i++;
+    if ($i<count($xml->content)) echo ', ';
+}
+?>
+</div>

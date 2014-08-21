@@ -12,37 +12,81 @@ class Renderer
     implements ViewInterface
 {
 
-    protected $item;
+    protected $xml;
+    protected $limit=null;
+    protected $offset=0;
 
     public $options     = array();
     public $template    = null;
     public $content     = null;
 
-    public function __construct($item = null)
+    public function __construct($xml = null)
     {
-        $this->item = $item;
-        $this->render(
-            $this
-                ->guessTemplate()
-                ->getTemplate($this->template),
-            array('xml'=>$this->item)
-        );
+        $this->xml = $xml;
     }
 
     public function __toString()
     {
+        $this->render(
+            $this
+                ->guessTemplate()
+                ->getTemplate($this->template),
+            array(
+                'xml'=>$this->xml,
+                'limit'=>$this->getLimit(),
+                'offset'=>$this->getOffset()
+            )
+        );
         return $this->content;
+    }
+
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    public function setOffset($offset)
+    {
+        $this->offset = $offset;
+        return $this;
+    }
+
+    public function getOffset()
+    {
+        return $this->offset;
     }
 
     public function guessTemplate()
     {
         if (!empty($this->template)) return;
 
-        if ($this->item instanceof \WebSyndication\Feed) {
-            $this->template = Helper::getTemplate('feed_channel');
+        if (is_object($this->xml)) {
+            if ($this->xml instanceof \WebSyndication\Feed) {
+                $tpl_name = 'feed_channel_template';
+            } elseif ($this->xml instanceof \WebSyndication\FeedsCollection) {
+                $feeds = $this->xml->getFeedsRegistry();
+                if (count($feeds)==1) {
+                    $tpl_name = 'feed_channel_template';
+                    $this->xml = $feeds[0];
+                } else {
+                    $tpl_name = 'feed_collection_template';
+                }
+            } elseif ($this->xml instanceof \WebSyndication\ItemsCollection) {
+                $tpl_name = 'feed_collection_template';
+            } else {
+                $tpl_name = 'feed_item_template';
+            }
         } else {
-            $this->template = Helper::getTemplate('feed_item');
+            $tpl_name = 'feed_collection_template';
         }
+
+        $this->template = Helper::getTemplate($tpl_name);
         return $this;
     }
 
@@ -66,7 +110,7 @@ class Renderer
     }
 
     /**
-     * Get a template file path (relative to `option['templates_dir']`)
+     * Get a template file path
      */
     public function getTemplate($name)
     {

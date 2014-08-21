@@ -1,6 +1,8 @@
 <?php
 /* @var \WebSyndication\Feed $xml */
 if (!isset($xml) || empty($xml)) return '';
+if (!isset($offset)) $offset = 0;
+if (!isset($limit)) $limit = null;
 
 $channel_image          = $xml->getTagItem('image');
 $channel_title          = $xml->getTagItem('title');
@@ -10,9 +12,9 @@ $channel_description    = $xml->getTagItem('description');
 $channel_subtitle       = $xml->getTagItem('subtitle');
 
 ?>
-<div class="channel-wrapper <?php echo \WebSyndication\Helper::getClass('channel_wrapper'); ?>">
+<div class="<?php echo \WebSyndication\Helper::getClass('channel_wrapper'); ?>">
 
-    <div class="channel-title <?php echo \WebSyndication\Helper::getClass('channel_title'); ?>">
+    <div class="<?php echo \WebSyndication\Helper::getClass('channel_title'); ?>">
 
 <?php if (!empty($channel_link)) : ?>
         <a href="<?php echo $channel_link->content; ?>" title="<?php 
@@ -28,29 +30,43 @@ $channel_subtitle       = $xml->getTagItem('subtitle');
 
     </div>
 
-    <div class="channel-content <?php echo \WebSyndication\Helper::getClass('channel_content'); ?>">
+    <div class="<?php echo \WebSyndication\Helper::getClass('channel_content'); ?>">
 
-<?php if (!empty($channel_subtitle)) : ?>
-        <div class="channel-subtitle <?php echo \WebSyndication\Helper::getClass('channel_subtitle'); ?>">
-            <?php echo $channel_subtitle->getXmlValue(); ?>
-        </div>
-<?php endif; ?>
+<?php
+// subtitle
+if (!empty($channel_subtitle)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('content_tag_template'),
+        array('xml' => $channel_subtitle, 'alt_class' => \WebSyndication\Helper::getClass('channel_alt_class'))
+    );
+}
 
-<?php if (!empty($channel_description)) : ?>
-        <div class="channel-description <?php echo \WebSyndication\Helper::getClass('channel_description'); ?>">
-            <?php echo $channel_description->getXmlValue(); ?>
-        </div>
-<?php endif; ?>
+// description
+if (!empty($channel_description)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('content_tag_template'),
+        array('xml' => $channel_description, 'alt_class' => \WebSyndication\Helper::getClass('channel_alt_class'))
+    );
+}
 
-<?php if (!empty($channel_image)) : ?>
-        <div class="channel-image <?php echo \WebSyndication\Helper::getClass('channel_image'); ?>">
-            <?php echo \WebSyndication\Helper::renderView(
-                \WebSyndication\Helper::getTemplate('image_tag_template'),
-                array('xml' => $channel_image, 'alt_class' => 'channel')
-            ); ?>
-        </div>
-<?php endif; ?>
+// image
+if (!empty($channel_image)) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('image_tag_template'),
+        array('xml' => $channel_image, 'alt_class' => \WebSyndication\Helper::getClass('channel_alt_class'))
+    );
+}
+?>
 
     </div>
 
 </div>
+
+<?php
+foreach ($xml->getItems($limit, $offset) as $item) {
+    echo \WebSyndication\Helper::renderView(
+        \WebSyndication\Helper::getTemplate('feed_item_template'),
+        array('xml' => $item, 'alt_class' => \WebSyndication\Helper::getClass('channel_alt_class'))
+    );
+}
+?>

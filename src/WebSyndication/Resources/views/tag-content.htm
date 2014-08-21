@@ -2,6 +2,6 @@
 if (!isset($xml) || empty($xml)) return '';
 if (!isset($alt_class)) $alt_class = '';
 ?>
-<div class="tag-content <?php echo \WebSyndication\Helper::getClass('tag_content'); ?> <?php echo $alt_class; ?>">
+<div class="<?php echo \WebSyndication\Helper::getClass('tag_content'); ?> <?php echo $alt_class; ?>">
     <?php echo $xml->getXmlValue(); ?>
 </div>

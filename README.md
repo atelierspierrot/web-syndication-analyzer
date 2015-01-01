@@ -70,7 +70,7 @@ The namespaces will be automatically added to the project Composer autoloader.
 
 >    http://github.com/atelierspierrot/web-syndication-analyzer
 
->    Copyleft 2014, Pierre Cassat and contributors
+>    Copyleft 2014-2015, Pierre Cassat and contributors
 
 >    Licensed under the GPL Version 3 license.
 

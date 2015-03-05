@@ -5,7 +5,7 @@
     "description": "A package to manipulate syndication feeds.",
     "keywords": ["rss"],
     "homepage": "http://github.com/atelierspierrot/web-syndication-analyzer",
-    "license": "GPL-3.0",
+    "license": "Apache-2.0",
     "authors": [{
             "name": "Les Ateliers Pierrot & contributors",
             "email": "contact@ateliers-pierrot.fr",

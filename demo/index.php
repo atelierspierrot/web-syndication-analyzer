@@ -275,7 +275,7 @@ if (!empty($feeds)) {
                 This page is <a href="" title="Check now online" id="html_validation">HTML5</a> & <a href="" title="Check now online" id="css_validation">CSS3</a> valid.
             </div>
             <div class="text-muted pull-right">
-                <a href="http://github.com/atelierspierrot/web-syndication-analyzer">atelierspierrot/web-syndication-analyzer</a> package by <a href="https://github.com/piwi">@piwi</a> under <a href="http://www.gnu.org/copyleft/gpl.html">GPL v. 3.0</a> license.
+                <a href="http://github.com/atelierspierrot/web-syndication-analyzer">atelierspierrot/web-syndication-analyzer</a> package by <a href="https://github.com/piwi">@piwi</a> under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a> license.
                 <p class="text-muted small" id="user_agent"></p>
             </div>
         </div>

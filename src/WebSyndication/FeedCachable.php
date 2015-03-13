@@ -27,6 +27,7 @@ use \Patterns\Interfaces\CachableInterface;
 use \WebSyndication\Helper;
 
 /**
+ * @author  piwi <me@e-piwi.fr>
  */
 class FeedCachable
     extends Feed

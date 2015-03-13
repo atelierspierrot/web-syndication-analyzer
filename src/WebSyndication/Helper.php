@@ -26,6 +26,8 @@ use \SimpleXMLElement;
 
 /**
  * Helper class for WebSyndication library
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class Helper
 {

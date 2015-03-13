@@ -28,6 +28,8 @@ use \WebSyndication\Abstracts\SimpleObject;
 
 /**
  * The simplest syndication object entity with XML data
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class XMLObject
     extends SimpleObject

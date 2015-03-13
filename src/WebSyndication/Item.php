@@ -32,6 +32,9 @@ use \WebSyndication\Abstracts\ItemInterface;
 use \WebSyndication\Abstracts\ParserInterface;
 use \WebSyndication\Abstracts\ItemsContainerInterface;
 
+/**
+ * @author  piwi <me@e-piwi.fr>
+ */
 class Item
     extends XMLDataObject
     implements ItemInterface, ParserInterface, ItemsContainerInterface

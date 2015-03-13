@@ -27,6 +27,8 @@ use \WebSyndication\Abstracts\StdClass as WebSyndicStdClass;
 
 /**
  * The simplest syndication object entity with XML data and a set of data
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class XMLDataObject
     extends XMLObject

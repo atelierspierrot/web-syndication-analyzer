@@ -27,6 +27,8 @@ use \WebSyndication\Abstracts\ItemsContainerInterface;
 
 /**
  * A specific standard class definition
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class StdClass
     implements ItemsContainerInterface

@@ -24,6 +24,8 @@ namespace WebSyndication\Abstracts;
 
 /**
  * The simplest syndication object entity
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class SimpleObject
 {

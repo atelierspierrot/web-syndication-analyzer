@@ -27,6 +27,9 @@ use \WebSyndication\Abstracts\XMLDataObject;
 use \WebSyndication\Abstracts\ParserInterface;
 use \WebSyndication\Feed;
 
+/**
+ * @author  piwi <me@e-piwi.fr>
+ */
 class Parser
     extends XMLDataObject
     implements ParserInterface

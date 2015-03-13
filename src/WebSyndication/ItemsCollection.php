@@ -28,6 +28,8 @@ use \WebSyndication\Feed;
 
 /**
  * The collection handler for items
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class ItemsCollection
     extends Collection

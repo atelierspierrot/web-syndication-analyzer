@@ -24,6 +24,8 @@ namespace WebSyndication\Abstracts;
 
 /**
  * Interface for object containing syndication items
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 interface ItemsContainerInterface
 {

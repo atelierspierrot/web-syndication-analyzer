@@ -28,6 +28,8 @@ use \WebSyndication\Feed;
 
 /**
  * The global Feeds collection
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class FeedsCollection
     extends Collection

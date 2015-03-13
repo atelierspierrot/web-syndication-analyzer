@@ -27,6 +27,8 @@ use \WebSyndication\Abstracts\StdClass;
 
 /**
  * Class to generate an HTML output from each syndication item type
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class Renderer
     implements ViewInterface

@@ -24,6 +24,8 @@ namespace WebSyndication\Abstracts;
 
 /**
  * Interface for syndication item(s) parser
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 interface ParserInterface
 {

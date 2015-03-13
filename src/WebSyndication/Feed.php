@@ -31,6 +31,9 @@ use \WebSyndication\Abstracts\ParserInterface;
 use \WebSyndication\Abstracts\ReaderInterface;
 use \WebSyndication\Abstracts\ItemsContainerInterface;
 
+/**
+ * @author  piwi <me@e-piwi.fr>
+ */
 class Feed
     extends XMLDataObject
     implements ParserInterface, ReaderInterface, ItemsContainerInterface

@@ -24,6 +24,8 @@ namespace WebSyndication\Abstracts;
 
 /**
  * Interface for syndication feed(s) reader
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 interface ReaderInterface
 {

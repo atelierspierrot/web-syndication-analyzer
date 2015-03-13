@@ -28,6 +28,8 @@ use \WebSyndication\Abstracts\ItemsContainerInterface;
 
 /**
  * A collection helper for XML objects
+ *
+ * @author  piwi <me@e-piwi.fr>
  */
 class XMLObjectsCollection
     extends XMLDataObject

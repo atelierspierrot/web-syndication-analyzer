@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class XMLObjectsCollection
     protected $position=0;
     protected $collection;
 
-    public function __construct( $items )
+    public function __construct($items)
     {
         if (is_array($items)) {
             $this->setCollection($items);
@@ -56,13 +56,13 @@ class XMLObjectsCollection
     public function __toString()
     {
         $str='';
-        foreach($this->getCollection() as $_item) {
+        foreach ($this->getCollection() as $_item) {
             $str .= $_item->__toString();
         }
         return $str;
     }
     
-    public function getTagItem( $tag_name )
+    public function getTagItem($tag_name)
     {
     }
 
@@ -91,11 +91,11 @@ class XMLObjectsCollection
     {
         $table = array();
         if (!empty($collection->item)) {
-            for($i=0; $i<count($collection->item); $i++) {
+            for ($i=0; $i<count($collection->item); $i++) {
                 $table[] = $collection->item[$i];
             }
         } elseif (!empty($collection->entry)) {
-            for($i=0; $i<count($collection->entry); $i++) {
+            for ($i=0; $i<count($collection->entry); $i++) {
                 $table[] = $collection->entry[$i];
             }
         }
@@ -147,6 +147,4 @@ class XMLObjectsCollection
     {
         return count($this->collection);
     }
-
 }
-

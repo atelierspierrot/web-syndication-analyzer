@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,9 @@ class Renderer
 
     public function guessTemplate()
     {
-        if (!empty($this->template)) return;
+        if (!empty($this->template)) {
+            return;
+        }
 
         if (is_object($this->xml)) {
             if ($this->xml instanceof \WebSyndication\Feed) {
@@ -138,7 +140,4 @@ class Renderer
     {
         return Helper::getTemplate($name);
     }
-
 }
-
-// Endfile

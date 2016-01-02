@@ -44,7 +44,7 @@ $options = array(
  * `E_ALL & ~E_STRICT` => for hard dev in PHP5.4 avoiding strict warnings
  * `E_ALL & ~E_NOTICE & ~E_STRICT` => classic setting
  */
-@ini_set('display_errors','1'); @error_reporting(E_ALL);
+@ini_set('display_errors', '1'); @error_reporting(E_ALL);
 //@ini_set('display_errors','1'); @error_reporting(E_ALL & ~E_STRICT);
 //@ini_set('display_errors','1'); @error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 
@@ -60,9 +60,13 @@ $md = isset($_GET['md']) ? $_GET['md'] : 'none';
 $arg_ln = isset($_GET['ln']) ? $_GET['ln'] : 'en';
 $page = isset($_GET['page']) ? $_GET['page'] : null;
 if (!empty($page)) {
-    if (file_exists($page.'.php')) $page = $page . '.php';
-    elseif (file_exists($page.'.html')) $page = $page . '.html';
-    else unset($page);
+    if (file_exists($page.'.php')) {
+        $page = $page . '.php';
+    } elseif (file_exists($page.'.html')) {
+        $page = $page . '.html';
+    } else {
+        unset($page);
+    }
 }
 
 // contents settings
@@ -192,7 +196,6 @@ $category = (!empty($_POST) && isset($_POST['category'])) ? $_POST['category'] :
 $feeds = null;
 
 if (!empty($feed_urls)) {
-
     $feeds = new \WebSyndication\FeedsCollection($feed_urls);
     $feeds->read();
 
@@ -229,7 +232,9 @@ if (!empty($feed_urls)) {
         echo '<ul class="pagination">';
         foreach ($pagination as $i=>$page) {
             echo '<li';
-            if ($page->isCurrent()) echo ' class="active"';
+            if ($page->isCurrent()) {
+                echo ' class="active"';
+            }
             echo '><a href="#" onclick="updateForm(\'current_page\', '.$page->getPageNumber().');">'.$page->getPageNumber().'</a></li>';
         }
         echo '</ul>';

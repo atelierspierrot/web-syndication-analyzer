@@ -2,28 +2,27 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
- * 
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * The source code of this package is available online at 
+ * The source code of this package is available online at
  * <http://github.com/atelierspierrot/web-syndication-analyzer>.
  */
 
 namespace WebSyndication;
 
 use \SimpleXMLElement;
-
 use \WebSyndication\Helper;
 use \WebSyndication\Abstracts\XMLDataObject;
 use \WebSyndication\Abstracts\XMLObjectsCollection;
@@ -84,7 +83,7 @@ class Feed
 
     public function getItemById($id)
     {
-        foreach($this->items->getData() as $_item) {
+        foreach ($this->items->getData() as $_item) {
             if (isset($_item->id) && $_item->id===$id) {
                 return $_item;
             }
@@ -96,10 +95,10 @@ class Feed
     {
         $items = $this->getItems($limit, $offset);
         $categories = array();
-        foreach($items as $i=>$item) {
+        foreach ($items as $i=>$item) {
             $_cats = $item->getTagItem('category');
             if ($_cats && is_array($_cats->content)) {
-                foreach($_cats->content as $j=>$_cat) {
+                foreach ($_cats->content as $j=>$_cat) {
                     $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
                     if (!in_array($_cat, $categories)) {
                         $categories[] = $cat_label;
@@ -124,10 +123,10 @@ class Feed
     {
         $items = $this->getItems();
         $collection = array();
-        foreach($items as $i=>$item) {
+        foreach ($items as $i=>$item) {
             $_cats = $item->getTagItem('category');
             if ($_cats && is_array($_cats->content)) {
-                foreach($_cats->content as $j=>$_cat) {
+                foreach ($_cats->content as $j=>$_cat) {
                     $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
                     if ($cat_label==$category) {
                         $collection[] = $item;
@@ -142,7 +141,7 @@ class Feed
     public function setFeedUrl($feed_url)
     {
         $this->feed_url = $feed_url;
-        $this->id = Helper::encodeStringToId( $this->feed_url );
+        $this->id = Helper::encodeStringToId($this->feed_url);
         return $this;
     }
 
@@ -169,16 +168,16 @@ class Feed
     public function __toString()
     {
         $str = $this->getFeedName();
-        foreach($this->items as $_item) {
+        foreach ($this->items as $_item) {
             $str .= PHP_EOL.$_item->__toString();
         }
         return $str;
     }
-    
+
     public function getTagItem($tag_name)
     {
         $tags = $this->getData();
-        $found = Helper::findTagByCommonName( $tags, $tag_name );
+        $found = Helper::findTagByCommonName($tags, $tag_name);
         if (!empty($found)) {
             return $found;
         } else {
@@ -217,18 +216,18 @@ class Feed
     protected function _init($xml)
     {
         try {
-            $this->setXml( new SimpleXMLElement($xml, 0, false) );
-        } catch(\Exception $e) {
-            throw new \RuntimeException( 'An error occurred while trying to load XML string '.$xml.' : '.$e->getMessage() );
+            $this->setXml(new SimpleXMLElement($xml, 0, false));
+        } catch (\Exception $e) {
+            throw new \RuntimeException('An error occurred while trying to load XML string '.$xml.' : '.$e->getMessage());
         }
         if (Helper::readProtocol($this->xml)) {
-            $this->setProtocol( Helper::readProtocol($this->xml) );
+            $this->setProtocol(Helper::readProtocol($this->xml));
         }
         if (Helper::readVersion($this->xml)) {
-            $this->setVersion( Helper::readVersion($this->xml) );
+            $this->setVersion(Helper::readVersion($this->xml));
         }
         if (Helper::readNamespaces($this->xml)) {
-            $this->setNamespaces( Helper::readNamespaces($this->xml) );
+            $this->setNamespaces(Helper::readNamespaces($this->xml));
         }
         return $this;
     }
@@ -241,40 +240,36 @@ class Feed
     {
         if ($this->getProtocol()==='RSS') {
             // channel
-            $parser                 = new Parser( $this->xml->channel, $this, 'channel' );
+            $parser                 = new Parser($this->xml->channel, $this, 'channel');
             $channel                = $parser->getData();
             $channel->protocol      = strtolower($this->getProtocol());
-            $this->setData( $channel );
-    
+            $this->setData($channel);
+
             // items
-            $this->items            = new XMLObjectsCollection( $this->xml->channel );
+            $this->items            = new XMLObjectsCollection($this->xml->channel);
             foreach ($this->items as $i=>$item) {
-                $parser             = new Parser( $item, $this, 'item' );
+                $parser             = new Parser($item, $this, 'item');
                 $item               = $parser->getData();
                 $item->protocol     = strtolower($this->getProtocol());
-                $item->id           = $this->id.'_'.Helper::encodeStringToId( $item->title->content );
-                $this->items->addData( $i, $item );
+                $item->id           = $this->id.'_'.Helper::encodeStringToId($item->title->content);
+                $this->items->addData($i, $item);
             }
-
         } elseif ($this->getProtocol()==='ATOM') {
             // entry
-            $parser             = new Parser( $this->xml, $this, 'feed' );
+            $parser             = new Parser($this->xml, $this, 'feed');
             $channel            = $parser->getData();
             $channel->protocol  = strtolower($this->getProtocol());
-            $this->setData( $channel );
-    
+            $this->setData($channel);
+
             // entry
-            $this->items            = new XMLObjectsCollection( $this->xml );
+            $this->items            = new XMLObjectsCollection($this->xml);
             foreach ($this->items as $i=>$item) {
-                $parser             = new Parser( $item, $this, 'feed' );
+                $parser             = new Parser($item, $this, 'feed');
                 $item               = $parser->getData();
                 $item->protocol     = strtolower($this->getProtocol());
-                $item->id           = $this->id.'_'.Helper::encodeStringToId( $item->title->content );
-                $this->items->addData( $i, $item );
+                $item->id           = $this->id.'_'.Helper::encodeStringToId($item->title->content);
+                $this->items->addData($i, $item);
             }
         }
     }
-
 }
-
-// Endfile

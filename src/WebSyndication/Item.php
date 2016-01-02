@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ namespace WebSyndication;
 use \DateTime;
 use \Locale;
 use \SimpleXMLElement;
-
 use \WebSyndication\Helper;
 use \WebSyndication\Abstracts\XMLDataObject;
 use \WebSyndication\Abstracts\ItemInterface;
@@ -53,15 +52,15 @@ class Item
     public function __construct($type, $tag_value, $tag_name, $tag_settings = array())
     {
         $this
-            ->setType( $type )
-            ->setXmlValue( $tag_value instanceOf SimpleXMLElement ? Helper::getContent( $tag_value ) : $tag_value )
-            ->setName( $tag_name );
+            ->setType($type)
+            ->setXmlValue($tag_value instanceof SimpleXMLElement ? Helper::getContent($tag_value) : $tag_value)
+            ->setName($tag_name);
 
-        if ($tag_value instanceOf SimpleXMLElement) {
-            $this->setXml( $tag_value );
+        if ($tag_value instanceof SimpleXMLElement) {
+            $this->setXml($tag_value);
         }
         if (!is_null($tag_settings)) {
-            $this->setSettings( $tag_settings );
+            $this->setSettings($tag_settings);
         }
         $this->init();
         if (false===$this->isEmpty) {
@@ -170,24 +169,25 @@ class Item
             $this->attributes = Helper::getAttributesAsArray($this->getXml());
         }
 
-        switch($this->type) {
+        switch ($this->type) {
             case 'datetime':
-                $this->content = new DateTime( $this->xml_value );
+                $this->content = new DateTime($this->xml_value);
                 break;
             case 'time':
                 $this->content = new DateTime;
-                if (true===$this->getSetting('isHours'))
-                    $this->content->setTime( $this->xml_value, 0 );
-                elseif (true===$this->getSetting('isMinutes'))
-                    $this->content->setTime( 0, $this->xml_value );
-                elseif (true===$this->getSetting('isSeconds'))
-                    $this->content->setTime( 0, 0, $this->xml_value );
+                if (true===$this->getSetting('isHours')) {
+                    $this->content->setTime($this->xml_value, 0);
+                } elseif (true===$this->getSetting('isMinutes')) {
+                    $this->content->setTime(0, $this->xml_value);
+                } elseif (true===$this->getSetting('isSeconds')) {
+                    $this->content->setTime(0, 0, $this->xml_value);
+                }
                 break;
             case 'text':
                 $this->content = strip_tags($this->xml_value);
                 break;
             case 'lang':
-                $this->content = Locale::getDisplayLanguage( $this->xml_value );
+                $this->content = Locale::getDisplayLanguage($this->xml_value);
                 break;
             case 'int': case 'integer':
                 $this->content = (int) $this->xml_value;
@@ -198,8 +198,8 @@ class Item
             case 'list':
                 $this->content = array();
                 $type = isset($this->settings['listitem_type']) ? $this->settings['listitem_type'] : 'string';
-                foreach($this->xml_value as $_value) {
-                    $this->content[] = new Item( $type, $_value, $this->name, $this->settings );
+                foreach ($this->xml_value as $_value) {
+                    $this->content[] = new Item($type, $_value, $this->name, $this->settings);
                 }
                 break;
             default:
@@ -219,7 +219,7 @@ class Item
     
     public function getTagItem($tag_name)
     {
-        return Helper::findTagByCommonName( $this, $tag_name );
+        return Helper::findTagByCommonName($this, $tag_name);
     }
 
 // -------------------
@@ -228,8 +228,10 @@ class Item
 
     public function getHtml()
     {
-        if (!$this->exists()) return '';
-        switch($this->type) {
+        if (!$this->exists()) {
+            return '';
+        }
+        switch ($this->type) {
             case 'datetime':
                 $html = '<abbr title="'.$this->content->format('c').'">'
                     .(class_exists('WebSyndication\Helper') ?
@@ -253,8 +255,7 @@ class Item
                 break;
             case 'list':
                 $html = '';
-                foreach($this->content as $_ctt)
-                {
+                foreach ($this->content as $_ctt) {
                     $html .= (strlen($html) ? ', ' : '').$_ctt->content;
                 }
                 break;
@@ -264,7 +265,4 @@ class Item
         }
         return $html;
     }
-
 }
-
-// Endfile

@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,9 @@ class Parser
         $this
             ->setXml($xml)
             ->setFeed($feed);
-        if (!empty($this->xml)) $this->parse($tag_name);
+        if (!empty($this->xml)) {
+            $this->parse($tag_name);
+        }
     }
 
 // -------------------
@@ -69,19 +71,21 @@ class Parser
     public function parse($tag_name = null)
     {
         $namespaces = $this->feed->getNamespaces();
-        $specs = \WebSyndication\Helper::getSpecifications( $this->feed->getProtocol(), $this->feed->getVersion() );
+        $specs = \WebSyndication\Helper::getSpecifications($this->feed->getProtocol(), $this->feed->getVersion());
         if (!empty($tag_name) && isset($specs[$tag_name])) {
 
 //if (self::$_debug) echo '<br />specs : '.var_export($specs,1);
 //if (self::$_debug) echo '<br />XML : '.var_export($this->getXml(),1);
 
-            foreach($specs[$tag_name] as $var=>$spe) {
-                $tagval = self::parseTag( $this->getXml(), $var, $spe, $specs );
+            foreach ($specs[$tag_name] as $var=>$spe) {
+                $tagval = self::parseTag($this->getXml(), $var, $spe, $specs);
                 if ($tagval) {
                     if (isset($spe['rename'])) {
                         $var = $spe['rename'];
                     }
-                    if (self::$_debug) echo '<br />adding data for tag name "'.$var.'" : '.var_export($tagval,1);
+                    if (self::$_debug) {
+                        echo '<br />adding data for tag name "'.$var.'" : '.var_export($tagval, 1);
+                    }
                     $this->addData($var, $tagval);
                 }
             }
@@ -91,7 +95,9 @@ class Parser
             );
         }
 
-        if (self::$_debug) echo '<hr />finally got data : '.var_export($this->getData(),1);
+        if (self::$_debug) {
+            echo '<hr />finally got data : '.var_export($this->getData(), 1);
+        }
         return $this->getData();
     }
 
@@ -99,8 +105,9 @@ class Parser
         $xml, $tag_name, array $tag_specifications,
         array $global_specifications, $is_attribute=false
     ) {
-
-        if (self::$_debug) echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var_export($tag_specifications,1); //.' on value '.var_export($xml,1);
+        if (self::$_debug) {
+            echo '<hr /><br />tag name : "'.$tag_name.'" with specs '.var_export($tag_specifications, 1);
+        } //.' on value '.var_export($xml,1);
 
         // type of the field
         if (isset($tag_specifications['type'])) {
@@ -121,7 +128,7 @@ class Parser
         if (false===$is_attribute && isset($xml->$tag_name)) {
             if ($field_type==='list') {
                 $value = array();
-                for($i=0; $i<count($xml->{$tag_name}); $i++) {
+                for ($i=0; $i<count($xml->{$tag_name}); $i++) {
                     $value[] = $xml->{$tag_name}[$i];
                 }
             } else {
@@ -142,20 +149,22 @@ class Parser
 //                $field->type = $type;
                 $field->type = $field_type;
 
-                foreach($global_specifications[$field_type] as $f_name=>$f_specs) {
+                foreach ($global_specifications[$field_type] as $f_name=>$f_specs) {
                     if ($f_name==='content' && !isset($value->content)) {
                         $f_name = $tag_name;
                         $value = $xml;
                     }
                     $tag = self::parseTag(
-                        $value, $f_name, $f_specs, $global_specifications, 
+                        $value, $f_name, $f_specs, $global_specifications,
                             (isset($f_specs['attribute']) && $f_specs['attribute']==='1')
                     );
                     if (!is_null($tag)) {
                         $field->{$f_name} = $tag;
                     }
                 }
-                if (self::$_debug) echo '<br />=> special object : '.var_export($field,1);
+                if (self::$_debug) {
+                    echo '<br />=> special object : '.var_export($field, 1);
+                }
             }
 
             // RSS_Field object
@@ -166,21 +175,18 @@ class Parser
                 if (isset($tag_specifications['rename'])) {
                     $tag_name = $tag_specifications['rename'];
                 }
-                $field = new \WebSyndication\Item( $field_type, $value, $tag_name, $field_settings );
-                if (self::$_debug) echo '<br />=> object : '.var_export($field,1);
+                $field = new \WebSyndication\Item($field_type, $value, $tag_name, $field_settings);
+                if (self::$_debug) {
+                    echo '<br />=> object : '.var_export($field, 1);
+                }
             }
             
             return $field;
-        }
-
-        elseif (isset($tag_specifications['required']) && $tag_specifications['required']==='1' && self::$_debug) {
+        } elseif (isset($tag_specifications['required']) && $tag_specifications['required']==='1' && self::$_debug) {
             throw new \RuntimeException(
                 sprintf('Required field "%s" is empty!', $tag_name)
             );
         }
         return null;
     }
-
 }
-
-// Endfile

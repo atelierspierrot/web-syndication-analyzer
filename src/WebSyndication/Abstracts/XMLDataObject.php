@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class XMLDataObject
     extends XMLObject
 {
 
-// -------------------
+    // -------------------
 // Data Content
 // -------------------
 
@@ -57,11 +57,11 @@ class XMLDataObject
     public function setData($data)
     {
         if (is_array($data)) {
-            foreach($data as $var=>$val) {
+            foreach ($data as $var=>$val) {
                 $this->addData($var, $val);
             }
         } elseif (is_object($data)) {
-            foreach(get_object_vars($data) as $var=>$def) {
+            foreach (get_object_vars($data) as $var=>$def) {
                 $this->addData($var, $data->$var);
             }
         }
@@ -73,7 +73,7 @@ class XMLDataObject
         if (!empty($limit)) {
             $data = array();
             if (is_object($this->data)) {
-                for($i=$offset; $i<=($offset+$limit); $i++) {
+                for ($i=$offset; $i<=($offset+$limit); $i++) {
                     if (property_exists($this->data, $i)) {
                         $data[] = $this->data->{$i};
                     }
@@ -108,7 +108,4 @@ class XMLDataObject
     {
         return $this->set($entry, $value);
     }
-
 }
-
-// Endfile

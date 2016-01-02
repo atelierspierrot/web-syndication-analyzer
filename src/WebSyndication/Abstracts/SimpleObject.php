@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ namespace WebSyndication\Abstracts;
 class SimpleObject
 {
 
-// -------------------
+    // -------------------
 // XML Protocol (RSS or ATOM), Version and Namespaces
 // -------------------
 
-    static $allowed_protocols = array(
+    public static $allowed_protocols = array(
         'rss'=>'rss',
         'atom'=>'atom',
         'feed'=>'atom'
@@ -91,7 +91,4 @@ class SimpleObject
     {
         return isset($this->namespaces[$index]);
     }
-
 }
-
-// Endfile

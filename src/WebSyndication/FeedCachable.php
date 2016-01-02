@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,11 +91,11 @@ class FeedCachable
      *
      * @return string
      */
-    function buildCacheKey()
+    public function buildCacheKey()
     {
         $this->setCacheKey(
             $this->getCacheDirname()
-            .sprintf(Helper::getOption('cache_filename_mask','%s.xml'), md5($this->getFeedUrl()))
+            .sprintf(Helper::getOption('cache_filename_mask', '%s.xml'), md5($this->getFeedUrl()))
         );
         return $this;
     }
@@ -110,9 +110,9 @@ class FeedCachable
      *
      * @return bool
      */
-    function isCached()
+    public function isCached()
     {
-        $cache_lifetime = Helper::getOption('cache_lifetime',0);
+        $cache_lifetime = Helper::getOption('cache_lifetime', 0);
         if ($cache_lifetime>0) {
             return (@file_exists($this->getCacheKey()) && (filemtime($this->getCacheKey())+$cache_lifetime) > time());
         } else {
@@ -127,7 +127,7 @@ class FeedCachable
      *
      * @return mixed
      */
-    function getCache()
+    public function getCache()
     {
         if (@file_exists($this->getCacheKey())) {
             ob_start();
@@ -148,7 +148,7 @@ class FeedCachable
      * @param mixed $content
      * @return bool
      */
-    function setCache($content)
+    public function setCache($content)
     {
         if (!empty($content) && $content->getXml()!==null) {
             return (!empty($content)) ?
@@ -165,14 +165,11 @@ class FeedCachable
      *
      * @return bool
      */
-    function invalidateCache()
+    public function invalidateCache()
     {
         if (@file_exists($this->getCacheKey())) {
             @unlink($this->getCacheKey());
         }
         return true;
     }
-
 }
-
-// Endfile

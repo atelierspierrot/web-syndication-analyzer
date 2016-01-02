@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ use \SimpleXMLElement;
 class Helper
 {
 
-// -------------------
+    // -------------------
 // Static configuration
 // -------------------
 
@@ -134,9 +134,9 @@ class Helper
 
     public static $specifications=array();
 
-    public static function getSpecifications( $protocol, $version )
+    public static function getSpecifications($protocol, $version)
     {
-        $specs_name = strtolower($protocol).( !empty($version) ? '-'.$version : '' );
+        $specs_name = strtolower($protocol).(!empty($version) ? '-'.$version : '');
         $specs_dir = self::getOption('specifications_dir');
         if (!isset(self::$specifications[$specs_name])) {
             $specs_file = __DIR__.'/'.$specs_dir.$specs_name.'.ini';
@@ -148,7 +148,7 @@ class Helper
                 );
             }
             if (isset($specs['common'])) {
-                foreach($specs as $tag=>$data) {
+                foreach ($specs as $tag=>$data) {
                     if ($tag!=='common') {
                         $specs[$tag] = array_merge($specs['common'], $specs[$tag]);
                     }
@@ -163,20 +163,22 @@ class Helper
 // Feed information
 // -------------------
 
-    public static function readProtocol( SimpleXMLElement $xml )
+    public static function readProtocol(SimpleXMLElement $xml)
     {
         return $xml->getName();
     }
     
-    public static function readVersion( SimpleXMLElement $xml )
+    public static function readVersion(SimpleXMLElement $xml)
     {
-        foreach($xml->attributes() as $attr=>$attr_val) {
-            if ($attr==='version') return $attr_val;
+        foreach ($xml->attributes() as $attr=>$attr_val) {
+            if ($attr==='version') {
+                return $attr_val;
+            }
         }
         return null;
     }
     
-    public static function readNamespaces( SimpleXMLElement $xml, $recursive=true )
+    public static function readNamespaces(SimpleXMLElement $xml, $recursive=true)
     {
         return $xml->getNamespaces($recursive);
     }
@@ -193,12 +195,12 @@ class Helper
         'media'         =>array( 'enclosure', 'source' )
     );
 
-    public static function findTagByCommonName( $xml, $tag_name )
+    public static function findTagByCommonName($xml, $tag_name)
     {
         $found = null;
         if (is_object($xml) && !empty($xml)) {
             if (array_key_exists($tag_name, self::$protocolsCorrespondance)) {
-                foreach(self::$protocolsCorrespondance[$tag_name] as $tag_replaced) {
+                foreach (self::$protocolsCorrespondance[$tag_name] as $tag_replaced) {
                     if (isset($xml->{$tag_replaced})) {
                         $found = $xml->{$tag_replaced};
                         break;
@@ -213,29 +215,31 @@ class Helper
         return $found;
     }
 
-    public static function getContent( $xml_item )
+    public static function getContent($xml_item)
     {
         $content = $xml_item->__toString();
         if ($xml_item) {
-            foreach($xml_item->children() as $i=>$child){
+            foreach ($xml_item->children() as $i=>$child) {
                 $content .= $child->asXml();
             }
         }
         return $content;
     }
 
-    public static function getAttribute( $xml_item, $attribute_name )
+    public static function getAttribute($xml_item, $attribute_name)
     {
-        foreach($xml_item->attributes() as $attr=>$attr_val) {
-            if ($attr===$attribute_name) return $attr_val;
+        foreach ($xml_item->attributes() as $attr=>$attr_val) {
+            if ($attr===$attribute_name) {
+                return $attr_val;
+            }
         }
         return null;
     }
 
-    public static function getAttributesAsArray( $xml_item )
+    public static function getAttributesAsArray($xml_item)
     {
         $attrs = array();
-        foreach($xml_item->attributes() as $attr=>$attr_val) {
+        foreach ($xml_item->attributes() as $attr=>$attr_val) {
             $attrs[$attr] = ($attr_val instanceof SimpleXMLElement) ? self::getContent($attr_val) : $attr_val;
         }
         return $attrs;
@@ -245,7 +249,7 @@ class Helper
 // Files information
 // -------------------
 
-    public static function getFilename( $filepath )
+    public static function getFilename($filepath)
     {
         $explode_filepath = explode('/', $filepath);
         return \Library\Helper\File::getHumanReadableFilename(end($explode_filepath));
@@ -255,14 +259,16 @@ class Helper
 // Strings management
 // -------------------
 
-    public static function encodeStringToId( $str )
+    public static function encodeStringToId($str)
     {
         return md5($str);
     }
 
-    public static function getSecuredString( $str, $in_charset=null, $out_charset='UTF-8//TRANSLIT' )
+    public static function getSecuredString($str, $in_charset=null, $out_charset='UTF-8//TRANSLIT')
     {
-        if (is_null($in_charset)) $in_charset = mb_detect_encoding($str);
+        if (is_null($in_charset)) {
+            $in_charset = mb_detect_encoding($str);
+        }
         return iconv($in_charset, $out_charset, $str);
     }
 
@@ -304,7 +310,7 @@ class Helper
         return preg_match('/^image\/(.*)$/', $mime);
     }
 
-    public static function getImageSize( $url )
+    public static function getImageSize($url)
     {
         $sizes = @getimagesize($url);
         if (!empty($sizes)) {
@@ -315,7 +321,9 @@ class Helper
 
     public static function imageResize($width = 0, $height = 0, $max_width = 32, $max_height = 32)
     {
-        if ($width===0 && $height===0) return array(0,0);
+        if ($width===0 && $height===0) {
+            return array(0,0);
+        }
         $new_width = $new_height = 0;
         if ($width<$max_width && $height<$max_height) {
             $new_width = $width;
@@ -337,7 +345,4 @@ class Helper
 
         return array($new_width, $new_height);
     }
-
 }
-
-// Endfile

@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 namespace WebSyndication;
 
 use \Patterns\Commons\Collection;
-
 use \WebSyndication\Feed;
 
 /**
@@ -50,8 +49,10 @@ class FeedsCollection
                 sprintf('Creation of a "%s" instance with no feeds collection is not allowed!', __CLASS__)
             );
         }
-        if (!is_array($feeds_collection)) $feeds_collection = array( $feeds_collection );
-        parent::__construct( $feeds_collection );
+        if (!is_array($feeds_collection)) {
+            $feeds_collection = array( $feeds_collection );
+        }
+        parent::__construct($feeds_collection);
     }
 
     public function read()
@@ -73,7 +74,7 @@ class FeedsCollection
 
     public function getFeedById($id)
     {
-        foreach($this->feeds_registry as $_feed) {
+        foreach ($this->feeds_registry as $_feed) {
             if (isset($_feed->id) && $_feed->id===$id) {
                 return $_feed;
             }
@@ -99,7 +100,7 @@ class FeedsCollection
         return $this->feeds_registry;
     }
 
-    public function getFeed( $url )
+    public function getFeed($url)
     {
         $index = $this->getFeedItemIndex($url);
         if (!empty($index) && array_key_exists($index, $this->feeds_registry)) {
@@ -116,7 +117,7 @@ class FeedsCollection
     {
         $cachable = Helper::getOption('use_cache', false);
         $this->feeds_registry = array();
-        foreach($this->getCollection() as $i=>$_feed_url) {
+        foreach ($this->getCollection() as $i=>$_feed_url) {
             $this->feeds_registry[$i] = $cachable ?
                 new FeedCachable($_feed_url, $i)
                 :
@@ -125,7 +126,7 @@ class FeedsCollection
         }
     }
 
-    public function forceRefresh( $feed_url )
+    public function forceRefresh($feed_url)
     {
         $cachable = Helper::getOption('use_cache', false);
         $index = $this->getFeedItemIndex($feed_url);
@@ -160,7 +161,7 @@ class FeedsCollection
                 $collection[] = $subitem;
             }
         }
-        usort($collection, function($a,$b){
+        usort($collection, function ($a, $b) {
             $a_date = $a->getTagItem('updated_date');
             $b_date = $b->getTagItem('updated_date');
             return (isset($a_date) && isset($b_date) && $a_date<$b_date);
@@ -174,7 +175,7 @@ class FeedsCollection
         foreach ($this->getItems($limit, $offset) as $item) {
             $_cats = $item->getTagItem('category');
             if ($_cats && is_array($_cats->content)) {
-                foreach($_cats->content as $j=>$_cat) {
+                foreach ($_cats->content as $j=>$_cat) {
                     $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
                     if (!in_array($cat_label, $categories)) {
                         $categories[] = $cat_label;
@@ -192,7 +193,7 @@ class FeedsCollection
         foreach ($this->getItems() as $item) {
             $_cats = $item->getTagItem('category');
             if ($_cats && is_array($_cats->content)) {
-                foreach($_cats->content as $j=>$_cat) {
+                foreach ($_cats->content as $j=>$_cat) {
                     $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
                     if ($cat_label==$category) {
                         $collection[] = $item;
@@ -203,7 +204,4 @@ class FeedsCollection
         }
         return array_slice($collection, $offset, $limit);
     }
-
 }
-
-// Endfile

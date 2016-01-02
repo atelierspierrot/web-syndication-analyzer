@@ -2,7 +2,7 @@
 /**
  * This file is part of the WebSyndicationAnalyzer package.
  *
- * Copyright (c) 2014-2015 Pierre Cassat <me@e-piwi.fr> and contributors
+ * Copyright (c) 2014-2016 Pierre Cassat <me@e-piwi.fr> and contributors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 namespace WebSyndication;
 
 use \Patterns\Commons\Collection;
-
 use \WebSyndication\Feed;
 
 /**
@@ -48,8 +47,10 @@ class ItemsCollection
                 sprintf('Creation of a "%s" instance with no items collection is not allowed!', __CLASS__)
             );
         }
-        if (!is_array($items_collection)) $items_collection = array( $items_collection );
-        parent::__construct( $items_collection );
+        if (!is_array($items_collection)) {
+            $items_collection = array( $items_collection );
+        }
+        parent::__construct($items_collection);
     }
 
     public function read()
@@ -71,7 +72,7 @@ class ItemsCollection
     public function getItems($limit = null, $offset = 0)
     {
         $collection = $this->getCollection();
-        usort($collection, function($a,$b){
+        usort($collection, function ($a, $b) {
             $a_date = $a->getTagItem('updated_date');
             $b_date = $b->getTagItem('updated_date');
             return (isset($a_date) && isset($b_date) && $a_date<$b_date);
@@ -85,7 +86,7 @@ class ItemsCollection
         foreach ($this->getItems($limit, $offset) as $item) {
             $_cats = $item->getTagItem('category');
             if ($_cats && is_array($_cats->content)) {
-                foreach($_cats->content as $j=>$_cat) {
+                foreach ($_cats->content as $j=>$_cat) {
                     $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
                     if (!in_array($cat_label, $categories)) {
                         $categories[] = $cat_label;
@@ -103,7 +104,7 @@ class ItemsCollection
         foreach ($this->getItems() as $item) {
             $_cats = $item->getTagItem('category');
             if ($_cats && is_array($_cats->content)) {
-                foreach($_cats->content as $j=>$_cat) {
+                foreach ($_cats->content as $j=>$_cat) {
                     $cat_label = ($_cat->hasAttribute('term') ? $_cat->getAttribute('term') : $_cat->content);
                     if ($cat_label==$category) {
                         $collection[] = $item;
@@ -114,7 +115,4 @@ class ItemsCollection
         }
         return array_slice($collection, $offset, $limit);
     }
-
 }
-
-// Endfile
